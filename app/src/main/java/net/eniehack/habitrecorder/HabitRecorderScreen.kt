@@ -1,6 +1,7 @@
 package net.eniehack.habitrecorder
 
-import androidx.compose.foundation.layout.Column
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,13 +26,31 @@ import net.eniehack.habitrecorder.ui.EditHabitScreenViewModel
 import net.eniehack.habitrecorder.ui.RecordScreen
 import net.eniehack.habitrecorder.ui.RecordScreenViewModel
 
-enum class HabitRecorderScreen() {
+enum class HabitRecorderScreen {
     HabitRecord,
     EditHabit
 }
 
-@Composable
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HabitRecorderScaffold(
+    topBar: @Composable () -> Unit = {
+        TopAppBar(
+            title = { Text("HabitRecorder") }
+        )
+    },
+    floatingActionButton: @Composable () -> Unit = {},
+    child: @Composable (Modifier) -> Unit = {},
+) {
+    Scaffold(
+        topBar = { topBar() },
+        floatingActionButton = { floatingActionButton() }
+    ) { innerPadding ->
+        child(Modifier.padding(innerPadding))
+    }
+}
+
+@Composable
 fun HabitRecorderApp(
     navController: NavHostController = rememberNavController()
 ) {
@@ -41,12 +61,10 @@ fun HabitRecorderApp(
         composable(route = HabitRecorderScreen.HabitRecord.name) {
             val viewModel = hiltViewModel<RecordScreenViewModel>()
             val uiState by viewModel.uiState.collectAsState()
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text("HabitRecorder") }
-                    )
-                },
+            val context = LocalContext.current
+            viewModel.getAllHabits()
+            Log.d("HabitRecorderApp", uiState.habits.toString())
+            HabitRecorderScaffold(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
@@ -56,41 +74,39 @@ fun HabitRecorderApp(
                         Icon(Icons.Filled.Add, "add new habits")
                     }
                 }
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier.padding(innerPadding),
-                ) {
-                    RecordScreen(
-                        habits = uiState.habits,
-                    )
-                }
+            ) { modifier ->
+                RecordScreen(
+                    habits = uiState.habits,
+                    onHabitCardButtonClicked = { habit ->
+                        viewModel.onHabitCardClicked(habit)
+                        Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = modifier,
+                )
             }
         }
         composable(route = HabitRecorderScreen.EditHabit.name) {
             val viewModel = hiltViewModel<EditHabitScreenViewModel>()
             val uiState by viewModel.uiState.collectAsState()
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text("HabitRecorder") }
-                    )
-                },
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier.padding(innerPadding),
-                ) {
-                    EditHabitScreen(
-                        title = uiState.title,
-                        onTitleChanged = { viewModel.onTitleChanged(it) },
-                        onButtonClick = {
-                            viewModel.onSubmit()
-                            navController.popBackStack(
-                                HabitRecorderScreen.HabitRecord.name,
-                                inclusive = false
-                            )
-                        },
-                    )
-                }
+            val context = LocalContext.current
+            HabitRecorderScaffold { modifier ->
+                EditHabitScreen(
+                    title = uiState.title,
+                    amount = uiState.amount,
+                    unit = uiState.unit,
+                    onTitleChanged = { viewModel.onTitleChanged(it) },
+                    onAmountChanged = { viewModel.onAmountChanged(it) },
+                    onUnitChanged = { viewModel.onUnitChanged(it) },
+                    onButtonClick = {
+                        viewModel.onSubmit()
+                        Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack(
+                            HabitRecorderScreen.HabitRecord.name,
+                            inclusive = false
+                        )
+                    },
+                    modifier = modifier,
+                )
             }
         }
     }

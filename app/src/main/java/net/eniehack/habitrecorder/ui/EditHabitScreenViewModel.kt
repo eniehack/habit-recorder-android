@@ -12,7 +12,9 @@ import net.eniehack.habitrecorder.data.HabitDao
 import javax.inject.Inject
 
 data class EditHabitScreenUiState(
-    val title: String = ""
+    val title: String = "",
+    val amount: Int = 1,
+    val unit: String = ""
 )
 
 @HiltViewModel
@@ -32,9 +34,26 @@ class EditHabitScreenViewModel @Inject constructor(private val habitDao: HabitDa
         habitDao.insert(
             Habit(
                 title = _uiState.value.title,
+                unit = _uiState.value.unit,
+                baseAmount = _uiState.value.amount,
                 pixelaId = null
             )
         )
     }
 
+    fun onUnitChanged(unit: String) = viewModelScope.launch {
+        _uiState.update { current ->
+            current.copy(
+                unit = unit
+            )
+        }
+    }
+
+    fun onAmountChanged(amount: Int?) = viewModelScope.launch {
+        _uiState.update { current ->
+            current.copy(
+                amount = amount ?: 1
+            )
+        }
+    }
 }

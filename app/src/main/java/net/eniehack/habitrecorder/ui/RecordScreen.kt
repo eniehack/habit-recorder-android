@@ -1,58 +1,95 @@
 package net.eniehack.habitrecorder.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.eniehack.habitrecorder.data.Habit
+import net.eniehack.habitrecorder.R
 
 @Composable
 fun RecordScreen(
-    habits: List<Habit>,
-    modifier: Modifier = Modifier
-) {
-    HabitsColumn(
-        habits = habits,
-        modifier = modifier.padding(15.dp),
-    )
-}
-
-@Composable
-fun HabitsColumn(
-    habits: List<Habit>,
+    habits: List<HabitWithStreak>,
+    onHabitCardButtonClicked: (HabitWithStreak) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
+        modifier = modifier.padding(15.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
     ) {
         items(items = habits, key = { it.id }) { habit ->
-            HabitCard(habit = habit, modifier = modifier)
+            HabitCard(
+                habit = habit,
+                onAddButtonClicked = onHabitCardButtonClicked,
+            )
         }
     }
 }
 
 @Composable
 fun HabitCard(
-    habit: Habit,
+    habit: HabitWithStreak,
+    onAddButtonClicked: (HabitWithStreak) -> Unit = {},
+    onHabitCardClicked: (HabitWithStreak) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth()
-    ) { 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = modifier.padding(16.dp)
+        onClick = { onHabitCardClicked(habit) },
+        modifier = modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier
+                .fillMaxSize()
+                .padding(15.dp),
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-            Text(habit.title)
+                Text(
+                    text = habit.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Row {
+                    Icon(
+                        painterResource(R.drawable.bolt_24px),
+                        null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "${habit.streaks} streaks",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+            Box(modifier.weight(1f))
+            IconButton(
+                onClick = { onAddButtonClicked(habit) },
+            ) {
+                Icon(Icons.Default.Add, "create check in")
+            }
         }
     }
 }
@@ -60,16 +97,20 @@ fun HabitCard(
 @Composable
 @Preview
 fun RecordHabitsScreenPreview() {
-    RecordScreen(habits = listOf(
-        Habit(
-            id = 1,
-            title = "腹筋",
-            pixelaId = null
+    RecordScreen(
+        habits = listOf(
+            HabitWithStreak(
+                id = 1,
+                title = "腹筋",
+                unit = "回",
+                streaks = 10
+            ),
+            HabitWithStreak(
+                id = 2,
+                title = "読書",
+                unit = "p",
+                streaks = 10
+            )
         ),
-        Habit(
-            id = 2,
-            title = "読書",
-            pixelaId = null
-        )
-    ))
+    )
 }

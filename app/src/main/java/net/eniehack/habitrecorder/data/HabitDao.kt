@@ -23,4 +23,10 @@ interface HabitDao {
 
     @Query("SELECT * FROM habit ORDER BY id ASC")
     fun getAllHabits(): Flow<List<Habit>>
+
+    @Query("SELECT * FROM habit JOIN checkin ON checkin.habit_id = habit.id WHERE habit.id = :id ORDER BY checkin.created_at DESC")
+    fun getHabitWithCheckIns(id: Int): Flow<Map<Habit, List<CheckIn>>>
+
+    @Query("SELECT * FROM habit JOIN checkin ON checkin.habit_id = habit.id ORDER BY checkin.created_at DESC")
+    fun getHabitsWithCheckIns(): Flow<Map<Habit, List<CheckIn>>>
 }

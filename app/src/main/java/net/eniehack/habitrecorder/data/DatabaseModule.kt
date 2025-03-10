@@ -19,9 +19,14 @@ object DatabaseModule {
             context,
             HabitDatabase::class.java,
             "habit_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
     fun provideHabitDao(db: HabitDatabase) = db.habitDao()
+
+    @Provides
+    fun provideCheckInDao(db: HabitDatabase) = db.checkInDao()
 }
