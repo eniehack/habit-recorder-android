@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -83,13 +84,27 @@ fun HabitCard(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
+                Row (
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = modifier.fillMaxWidth()
+                        .padding(8.dp)
+                        .size(24.dp)
+                ){
+                    IconButton(
+                        onClick = { onAddButtonClicked(habit) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Done, "create check in instantly")
+                    }
+                    IconButton(
+                        onClick = {  },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Default.Edit, "create check in")
+                    }
+                }
             }
             Box(modifier.weight(1f))
-            IconButton(
-                onClick = { onAddButtonClicked(habit) },
-            ) {
-                Icon(Icons.Default.Add, "create check in")
-            }
         }
     }
 }
