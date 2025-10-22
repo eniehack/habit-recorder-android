@@ -7,9 +7,9 @@ interface HabitRepository {
 
     fun getHabitStream(id: Int): Flow<Habit?>
 
-    fun getHabitWithCheckInsStream(id: Int): Flow<Map<Habit, List<CheckIn>>>
+    fun getHabitWithCheckInsStream(id: Int): Flow<HabitWithCheckIns>
 
-    fun getHabitsWithCheckInsStream(): Flow<Map<Habit, List<CheckIn>>>
+    fun getHabitsWithCheckInsStream(): Flow<List<HabitWithCheckIns>>
 
     suspend fun insertHabit(habit: Habit)
 

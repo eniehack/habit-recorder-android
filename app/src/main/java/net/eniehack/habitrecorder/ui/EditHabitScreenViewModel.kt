@@ -9,12 +9,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.data.Habit
 import net.eniehack.habitrecorder.data.HabitDao
+import net.eniehack.habitrecorder.data.HabitType
 import javax.inject.Inject
 
 data class EditHabitScreenUiState(
     val title: String = "",
     val amount: Int = 1,
-    val unit: String = ""
+    val unit: String = "",
+    val type: HabitType = HabitType.ACHIEVEMENT,
+    val typeSelectorExpander: Boolean = false,
 )
 
 @HiltViewModel
@@ -35,7 +38,7 @@ class EditHabitScreenViewModel @Inject constructor(private val habitDao: HabitDa
             Habit(
                 title = _uiState.value.title,
                 unit = _uiState.value.unit,
-                baseAmount = _uiState.value.amount,
+                type = _uiState.value.type,
                 pixelaId = null
             )
         )
@@ -53,6 +56,14 @@ class EditHabitScreenViewModel @Inject constructor(private val habitDao: HabitDa
         _uiState.update { current ->
             current.copy(
                 amount = amount ?: 1
+            )
+        }
+    }
+
+    fun onDismissHabitTypeSelector() = viewModelScope.launch {
+        _uiState.update { current ->
+            current.copy(
+                typeSelectorExpander = false
             )
         }
     }

@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,10 +45,19 @@ fun HabitRecorderScaffold(
 ) {
     Scaffold(
         topBar = { topBar() },
-        floatingActionButton = { floatingActionButton() }
+        floatingActionButton = { floatingActionButton() },
+        bottomBar = {
+        }
     ) { innerPadding ->
         child(Modifier.padding(innerPadding))
     }
+}
+
+@Composable
+fun BottomNavigationBar(
+    navController: NavHostController = rememberNavController()
+) {
+    val items = listOf(Pair("record", Icons.Default.Edit), Pair("analytics", R.drawable.monitoring_24px))
 }
 
 @Composable
@@ -97,6 +107,7 @@ fun HabitRecorderApp(
                     onTitleChanged = { viewModel.onTitleChanged(it) },
                     onAmountChanged = { viewModel.onAmountChanged(it) },
                     onUnitChanged = { viewModel.onUnitChanged(it) },
+                    onDismissHabitTypeSelector = { viewModel.onDismissHabitTypeSelector() },
                     onButtonClick = {
                         viewModel.onSubmit()
                         Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()

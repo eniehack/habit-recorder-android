@@ -1,26 +1,33 @@
 package net.eniehack.habitrecorder.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.data.CheckIn
-import net.eniehack.habitrecorder.data.CheckInDao
-import net.eniehack.habitrecorder.data.HabitDao
+import net.eniehack.habitrecorder.data.OfflineCheckInRepository
+import net.eniehack.habitrecorder.data.OfflineHabitsRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 data class HabitWithStreak(
-    val id: Int = 0 ,
+    val id: Int = 0,
     val title: String = "",
     val streaks: Int = 0,
     val unit: String = "",
-    val pixelaId : String? = null,
-    val baseAmount: Int = 1,
+    val pixelaId: String? = null,
 )
 
 data class RecordScreenUiState(
@@ -28,7 +35,10 @@ data class RecordScreenUiState(
 )
 
 @HiltViewModel
-class RecordScreenViewModel @Inject constructor(private val habitDao: HabitDao, private val checkInDao: CheckInDao) : ViewModel() {
+class RecordScreenViewModel @Inject constructor(
+    private val offlineHabitsRepo: OfflineHabitsRepository,
+    private val offlineCheckInRepo: OfflineCheckInRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(RecordScreenUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -55,43 +65,62 @@ class RecordScreenViewModel @Inject constructor(private val habitDao: HabitDao, 
         return currentStreak
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllHabits() {
-        viewModelScope.launch {
-            habitDao.getHabitsWithCheckIns().collect { result ->
-                _uiState.update { current ->
-                    current.copy(
-                        habits = result.keys.map { habit ->
-                            if (result.containsKey(habit)) {
-                                HabitWithStreak(
-                                    title = habit.title,
-                                    id = habit.id,
-                                    baseAmount = habit.baseAmount,
-                                    streaks = calcStreaks(result.getValue(habit)),
-                                    unit = habit.unit,
-                                )
-                            } else {
-                                HabitWithStreak(
-                                    title = habit.title,
-                                    id = habit.id,
-                                    baseAmount = habit.baseAmount,
-                                    streaks = 0,
-                                    unit = habit.unit,
-                                )
-                            }
-                        }
-                    )
+        offlineHabitsRepo.getHabitsWithCheckInsStream().flatMapLatest { habitsWithCheckins ->
+            if (habitsWithCheckins.isEmpty()) {
+                offlineHabitsRepo.getAllHabitStream().map { habits ->
+                    habits.map { habit ->
+                        HabitWithStreak(
+                            title = habit.title,
+                            id = habit.id,
+                            streaks = 0,
+                        )
+                    }
                 }
+            } else {
+                flowOf(habitsWithCheckins.map { habitWithCheckIn ->
+                    HabitWithStreak(
+                        title = habitWithCheckIn.habit.title,
+                        id = habitWithCheckIn.habit.id,
+                        streaks = calcStreaks(habitWithCheckIn.checkIns),
+                        unit = habitWithCheckIn.habit.unit,
+                    )
+                })
             }
-        }
+        }.onEach { habitWithStreaks ->
+            Log.d("HabitRecorder", "recv new data. len: ${habitWithStreaks.size}")
+            _uiState.update { current ->
+                current.copy(habits = habitWithStreaks)
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onHabitCardClicked(habit: HabitWithStreak) = viewModelScope.launch {
         val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        checkInDao.insert(
-            CheckIn(
-                habitId = habit.id,
-                createdAt = LocalDate.now().format(dateFormat)
+        val checkIn = offlineCheckInRepo.getCheckInStreamByHabitWithDate(
+            habitId = habit.id,
+            date = LocalDate.now()
+        ).firstOrNull()
+        if (checkIn == null) {
+            Log.d("habitrecorder", "inserting checkin (${habit.id}, ${LocalDate.now().format(dateFormat)})")
+            offlineCheckInRepo.insertCheckIn(
+                CheckIn(
+                    habitId = habit.id,
+                    createdAt = LocalDate.now().format(dateFormat)
+                )
             )
-        )
+        } else {
+            Log.d("HabitRecorderApp", "updating checkin (${habit.id}, ${LocalDate.now().format(dateFormat)})")
+            offlineCheckInRepo.updateCheckIn(
+                checkIn.copy(
+                    id = checkIn.id,
+                    habitId = habit.id,
+                    createdAt = checkIn.createdAt,
+                    amount = checkIn.amount.inc(),
+                )
+            )
+            Log.d("HabitRecorderApp", "updated checkin (${habit.id}, ${LocalDate.now().format(dateFormat)})")
+        }
     }
 }

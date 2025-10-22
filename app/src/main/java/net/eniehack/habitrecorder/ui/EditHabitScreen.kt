@@ -4,9 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -20,6 +25,8 @@ fun EditHabitScreen(
     title: String = "",
     amount: Int = 1,
     unit: String = "",
+    habitTypeSelectExpand: Boolean = false,
+    onDismissHabitTypeSelector: () -> Unit = {},
     onButtonClick: () -> Unit = {},
     onAmountChanged: (Int?) -> Unit = {},
     onTitleChanged: (String) -> Unit = {},
@@ -37,6 +44,18 @@ fun EditHabitScreen(
             onValueChange = { onTitleChanged(it) },
             label = { Text("title") }
         )
+        DropdownMenu(expanded = habitTypeSelectExpand, onDismissRequest = onDismissHabitTypeSelector) {
+            DropdownMenuItem(
+                text = { Text("achievement") },
+                onClick = {},
+                leadingIcon = { Icon(Icons.Default.Check, "check icon") }
+            )
+            DropdownMenuItem(
+                text = { Text("record") },
+                onClick = {},
+                leadingIcon = { Icon(Icons.Default.Edit, "recording icon") }
+            )
+        }
         TextField(
             value = amount.toString(),
             onValueChange = { onAmountChanged(it.toIntOrNull()) },

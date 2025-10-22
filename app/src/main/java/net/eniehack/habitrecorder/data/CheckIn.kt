@@ -6,13 +6,14 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName="checkin",
-    foreignKeys = [ForeignKey(
-        entity = Habit::class,
-        parentColumns = ["id"],
-        childColumns = ["habit_id"],
-        onDelete = ForeignKey.CASCADE
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = Habit::class,
+            parentColumns = ["id"],
+            childColumns = ["habit_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class CheckIn(
     @PrimaryKey(autoGenerate = true)
@@ -21,4 +22,5 @@ data class CheckIn(
     val habitId: Int,
     @ColumnInfo(name = "created_at")
     val createdAt: String,
+    val amount: Int = 1,
 )
