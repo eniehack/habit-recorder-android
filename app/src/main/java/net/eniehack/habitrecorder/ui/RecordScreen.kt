@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.eniehack.habitrecorder.R
+import net.eniehack.habitrecorder.data.Habit
+import net.eniehack.habitrecorder.data.HabitType
 
 @Composable
 fun RecordScreen(
@@ -37,9 +39,9 @@ fun RecordScreen(
         modifier = modifier.padding(15.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        items(items = habits, key = { it.id }) { habit ->
+        items(items = habits, key = { it.habit.id }) { habit ->
             HabitCard(
-                habit = habit,
+                habitWithStreak = habit,
                 onAddButtonClicked = onHabitCardButtonClicked,
             )
         }
@@ -48,13 +50,13 @@ fun RecordScreen(
 
 @Composable
 fun HabitCard(
-    habit: HabitWithStreak,
+    habitWithStreak: HabitWithStreak,
     onAddButtonClicked: (HabitWithStreak) -> Unit = {},
     onHabitCardClicked: (HabitWithStreak) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
-        onClick = { onHabitCardClicked(habit) },
+        onClick = { onHabitCardClicked(habitWithStreak) },
         modifier = modifier
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
@@ -69,7 +71,7 @@ fun HabitCard(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Text(
-                    text = habit.title,
+                    text = habitWithStreak.habit.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -80,7 +82,7 @@ fun HabitCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "${habit.streaks} streaks",
+                        text = "${habitWithStreak.streaks} streaks",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -91,7 +93,7 @@ fun HabitCard(
                         .size(24.dp)
                 ){
                     IconButton(
-                        onClick = { onAddButtonClicked(habit) },
+                        onClick = { onAddButtonClicked(habitWithStreak) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.Done, "create check in instantly")
@@ -115,15 +117,21 @@ fun RecordHabitsScreenPreview() {
     RecordScreen(
         habits = listOf(
             HabitWithStreak(
-                id = 1,
-                title = "腹筋",
-                unit = "回",
+                habit = Habit(
+                    id = 1,
+                    title = "腹筋",
+                    type = HabitType.ACHIEVEMENT,
+                    unit = "回"
+                ),
                 streaks = 10
             ),
             HabitWithStreak(
-                id = 2,
-                title = "読書",
-                unit = "p",
+                habit = Habit(
+                    id = 2,
+                    title = "読書",
+                    type = HabitType.ACHIEVEMENT,
+                    unit = "p"
+                ),
                 streaks = 10
             )
         ),

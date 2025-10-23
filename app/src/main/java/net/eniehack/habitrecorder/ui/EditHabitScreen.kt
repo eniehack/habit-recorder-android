@@ -16,16 +16,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.eniehack.habitrecorder.data.Habit
+import net.eniehack.habitrecorder.data.HabitType
 
 @Composable
 fun EditHabitScreen(
-    title: String = "",
-    amount: Int = 1,
-    unit: String = "",
-    habitTypeSelectExpand: Boolean = false,
+    habit: Habit,
     onDismissHabitTypeSelector: () -> Unit = {},
     onButtonClick: () -> Unit = {},
     onAmountChanged: (Int?) -> Unit = {},
@@ -40,10 +38,11 @@ fun EditHabitScreen(
             .padding(15.dp),
     ) {
         TextField(
-            value = title,
+            value = habit.title,
             onValueChange = { onTitleChanged(it) },
             label = { Text("title") }
         )
+        /*
         DropdownMenu(expanded = habitTypeSelectExpand, onDismissRequest = onDismissHabitTypeSelector) {
             DropdownMenuItem(
                 text = { Text("achievement") },
@@ -62,8 +61,9 @@ fun EditHabitScreen(
             label = { Text("amount") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
+         */
         TextField(
-            value = unit,
+            value = habit.unit,
             onValueChange = { onUnitChanged(it) },
             label = { Text("unit") },
         )
@@ -80,5 +80,11 @@ fun EditHabitScreen(
 @Preview
 @Composable
 fun EditHabitScreenPreview() {
-    EditHabitScreen()
+    EditHabitScreen(
+        Habit(
+            title = "読書",
+            type = HabitType.ACHIEVEMENT,
+            unit = "ページ"
+        )
+    )
 }

@@ -13,10 +13,11 @@ import net.eniehack.habitrecorder.data.HabitType
 import javax.inject.Inject
 
 data class EditHabitScreenUiState(
-    val title: String = "",
-    val amount: Int = 1,
-    val unit: String = "",
-    val type: HabitType = HabitType.ACHIEVEMENT,
+    val habit: Habit = Habit(
+        title = "",
+        unit = "",
+        type = HabitType.ACHIEVEMENT,
+    ),
     val typeSelectorExpander: Boolean = false,
 )
 
@@ -27,31 +28,29 @@ class EditHabitScreenViewModel @Inject constructor(private val habitDao: HabitDa
 
     fun onTitleChanged(title: String) = viewModelScope.launch {
         _uiState.update { current ->
+            val newHabit = current.habit.copy(title = title)
             current.copy(
-                title = title
+                habit = newHabit
             )
         }
     }
 
     fun onSubmit() = viewModelScope.launch {
         habitDao.insert(
-            Habit(
-                title = _uiState.value.title,
-                unit = _uiState.value.unit,
-                type = _uiState.value.type,
-                pixelaId = null
-            )
+            _uiState.value.habit
         )
     }
 
     fun onUnitChanged(unit: String) = viewModelScope.launch {
         _uiState.update { current ->
+            val newHabit = current.habit.copy(unit = unit)
             current.copy(
-                unit = unit
+                habit = newHabit
             )
         }
     }
 
+    /*
     fun onAmountChanged(amount: Int?) = viewModelScope.launch {
         _uiState.update { current ->
             current.copy(
@@ -59,6 +58,7 @@ class EditHabitScreenViewModel @Inject constructor(private val habitDao: HabitDa
             )
         }
     }
+     */
 
     fun onDismissHabitTypeSelector() = viewModelScope.launch {
         _uiState.update { current ->

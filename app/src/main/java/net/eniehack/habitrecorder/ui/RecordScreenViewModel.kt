@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.data.CheckIn
+import net.eniehack.habitrecorder.data.Habit
 import net.eniehack.habitrecorder.data.OfflineCheckInRepository
 import net.eniehack.habitrecorder.data.OfflineHabitsRepository
 import java.time.LocalDate
@@ -23,11 +24,8 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 data class HabitWithStreak(
-    val id: Int = 0,
-    val title: String = "",
+    val habit: Habit,
     val streaks: Int = 0,
-    val unit: String = "",
-    val pixelaId: String? = null,
 )
 
 data class RecordScreenUiState(
@@ -72,8 +70,7 @@ class RecordScreenViewModel @Inject constructor(
                 offlineHabitsRepo.getAllHabitStream().map { habits ->
                     habits.map { habit ->
                         HabitWithStreak(
-                            title = habit.title,
-                            id = habit.id,
+                            habit,
                             streaks = 0,
                         )
                     }
@@ -81,10 +78,8 @@ class RecordScreenViewModel @Inject constructor(
             } else {
                 flowOf(habitsWithCheckins.map { habitWithCheckIn ->
                     HabitWithStreak(
-                        title = habitWithCheckIn.habit.title,
-                        id = habitWithCheckIn.habit.id,
+                        habit = habitWithCheckIn.habit,
                         streaks = calcStreaks(habitWithCheckIn.checkIns),
-                        unit = habitWithCheckIn.habit.unit,
                     )
                 })
             }
@@ -96,31 +91,31 @@ class RecordScreenViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun onHabitCardClicked(habit: HabitWithStreak) = viewModelScope.launch {
+    fun onHabitCardClicked(habitWithStreak: HabitWithStreak) = viewModelScope.launch {
         val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val checkIn = offlineCheckInRepo.getCheckInStreamByHabitWithDate(
-            habitId = habit.id,
+            habitId = habitWithStreak.habit.id,
             date = LocalDate.now()
         ).firstOrNull()
         if (checkIn == null) {
-            Log.d("habitrecorder", "inserting checkin (${habit.id}, ${LocalDate.now().format(dateFormat)})")
+            Log.d("habitrecorder", "inserting checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
             offlineCheckInRepo.insertCheckIn(
                 CheckIn(
-                    habitId = habit.id,
+                    habitId = habitWithStreak.habit.id,
                     createdAt = LocalDate.now().format(dateFormat)
                 )
             )
         } else {
-            Log.d("HabitRecorderApp", "updating checkin (${habit.id}, ${LocalDate.now().format(dateFormat)})")
+            Log.d("HabitRecorderApp", "updating checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
             offlineCheckInRepo.updateCheckIn(
                 checkIn.copy(
                     id = checkIn.id,
-                    habitId = habit.id,
+                    habitId = habitWithStreak.habit.id,
                     createdAt = checkIn.createdAt,
                     amount = checkIn.amount.inc(),
                 )
             )
-            Log.d("HabitRecorderApp", "updated checkin (${habit.id}, ${LocalDate.now().format(dateFormat)})")
+            Log.d("HabitRecorderApp", "updated checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
         }
     }
 }

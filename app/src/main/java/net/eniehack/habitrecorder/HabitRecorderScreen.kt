@@ -101,11 +101,9 @@ fun HabitRecorderApp(
             val context = LocalContext.current
             HabitRecorderScaffold { modifier ->
                 EditHabitScreen(
-                    title = uiState.title,
-                    amount = uiState.amount,
-                    unit = uiState.unit,
+                    habit = uiState.habit,
                     onTitleChanged = { viewModel.onTitleChanged(it) },
-                    onAmountChanged = { viewModel.onAmountChanged(it) },
+                    //onAmountChanged = { viewModel.onAmountChanged(it) },
                     onUnitChanged = { viewModel.onUnitChanged(it) },
                     onDismissHabitTypeSelector = { viewModel.onDismissHabitTypeSelector() },
                     onButtonClick = {
