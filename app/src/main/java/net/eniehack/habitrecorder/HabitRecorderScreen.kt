@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.serialization.Serializable
 import net.eniehack.habitrecorder.ui.EditHabitScreen
 import net.eniehack.habitrecorder.ui.EditHabitScreenViewModel
 import net.eniehack.habitrecorder.ui.RecordScreen
@@ -31,6 +32,11 @@ enum class HabitRecorderScreen {
     HabitRecord,
     EditHabit
 }
+
+@Serializable
+data class EditHabitNavigationArgument(
+    val habitId: Int?
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +84,7 @@ fun HabitRecorderApp(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            navController.navigate(HabitRecorderScreen.EditHabit.name)
+                            navController.navigate(EditHabitNavigationArgument(habitId = null))
                         }
                     ) {
                         Icon(Icons.Filled.Add, "add new habits")
@@ -91,11 +97,14 @@ fun HabitRecorderApp(
                         viewModel.onHabitCardClicked(habit)
                         Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
                     },
+                    onHabitCardEditButtonClicked = { habit ->
+                        navController.navigate(EditHabitNavigationArgument(habitId = habit.id))
+                    },
                     modifier = modifier,
                 )
             }
         }
-        composable(route = HabitRecorderScreen.EditHabit.name) {
+        composable<EditHabitNavigationArgument> {
             val viewModel = hiltViewModel<EditHabitScreenViewModel>()
             val uiState by viewModel.uiState.collectAsState()
             val context = LocalContext.current
@@ -105,7 +114,6 @@ fun HabitRecorderApp(
                     onTitleChanged = { viewModel.onTitleChanged(it) },
                     //onAmountChanged = { viewModel.onAmountChanged(it) },
                     onUnitChanged = { viewModel.onUnitChanged(it) },
-                    onDismissHabitTypeSelector = { viewModel.onDismissHabitTypeSelector() },
                     onButtonClick = {
                         viewModel.onSubmit()
                         Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()

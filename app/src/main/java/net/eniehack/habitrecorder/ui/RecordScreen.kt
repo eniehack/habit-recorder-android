@@ -33,6 +33,7 @@ import net.eniehack.habitrecorder.data.HabitType
 fun RecordScreen(
     habits: List<HabitWithStreak>,
     onHabitCardButtonClicked: (HabitWithStreak) -> Unit = {},
+    onHabitCardEditButtonClicked: (Habit) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -43,6 +44,7 @@ fun RecordScreen(
             HabitCard(
                 habitWithStreak = habit,
                 onAddButtonClicked = onHabitCardButtonClicked,
+                onEditButtonClicked = onHabitCardEditButtonClicked,
             )
         }
     }
@@ -52,6 +54,7 @@ fun RecordScreen(
 fun HabitCard(
     habitWithStreak: HabitWithStreak,
     onAddButtonClicked: (HabitWithStreak) -> Unit = {},
+    onEditButtonClicked: (Habit) -> Unit = {},
     onHabitCardClicked: (HabitWithStreak) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -99,7 +102,7 @@ fun HabitCard(
                         Icon(Icons.Default.Done, "create check in instantly")
                     }
                     IconButton(
-                        onClick = {  },
+                        onClick = { onEditButtonClicked(habitWithStreak.habit) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.Edit, "create check in")

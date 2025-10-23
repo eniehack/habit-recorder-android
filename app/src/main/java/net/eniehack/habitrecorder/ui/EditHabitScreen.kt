@@ -4,14 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -56,7 +49,7 @@ fun EditHabitScreen(
             )
         }
         TextField(
-            value = amount.toString(),
+            value = habit.amount.toString(),
             onValueChange = { onAmountChanged(it.toIntOrNull()) },
             label = { Text("amount") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
