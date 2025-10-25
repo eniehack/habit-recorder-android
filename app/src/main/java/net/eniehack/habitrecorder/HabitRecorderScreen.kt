@@ -131,15 +131,15 @@ fun HabitRecorderApp(
                         viewModel.onHabitCardClicked(habit)
                         Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
                     },
-                    onHabitCardEditButtonClicked = { habit ->
-                        navController.navigate(EditHabitNavigationArgument(habitId = habit.id))
+                    onHabitCardEditButtonClicked = { it ->
+                        navController.navigate(EditHabitNavigationArgument(habitId = it.id))
                     },
-                    onHabitCardLongPressed = { habit ->
+                    onHabitCardLongPressed = { it ->
                         viewModel.enableSelectedMode()
-                        viewModel.addSelectedItem(habit)
+                        viewModel.addSelectedItem(it)
                     },
-                    isHabitSelected = { habit ->
-                        uiState.isSelectionMode && uiState.selectedItems.contains(habit)
+                    isHabitSelected = { it ->
+                        uiState.isSelectionMode && uiState.selectedItems.contains(it)
                     },
                     onHabitCardClicked = {
                         Log.d(
@@ -170,7 +170,6 @@ fun HabitRecorderApp(
                 EditHabitScreen(
                     habit = uiState.habit,
                     onTitleChanged = { viewModel.onTitleChanged(it) },
-                    //onAmountChanged = { viewModel.onAmountChanged(it) },
                     onUnitChanged = { viewModel.onUnitChanged(it) },
                     onButtonClick = {
                         viewModel.onSubmit()
