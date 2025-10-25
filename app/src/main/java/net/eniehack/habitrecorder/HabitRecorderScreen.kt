@@ -2,6 +2,7 @@ package net.eniehack.habitrecorder
 
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -83,7 +84,10 @@ fun HabitRecorderApp(
             val uiState by viewModel.uiState.collectAsState()
             val context = LocalContext.current
             viewModel.getAllHabits()
-            Log.d("HabitRecorderApp", uiState.habits.toString())
+
+            BackHandler(enabled = uiState.isSelectionMode) {
+                viewModel.disableSelectedMode()
+            }
             HabitRecorderScaffold(
                 floatingActionButton = {
                     FloatingActionButton(

@@ -36,6 +36,23 @@ data class RecordScreenUiState(
     val selectedItems: Set<Habit> = setOf()
 )
 
+fun calcStreaks(checkIns: List<CheckIn>, baseDate: LocalDate, dateFormat: DateTimeFormatter): Int {
+    if (checkIns.isEmpty()) return 0
+
+    var currentStreak = 0
+    var previousDate = baseDate
+    for (checkIn in checkIns.sortedBy { checkIn -> checkIn.createdAt }.reversed()) {
+        val currentDate = LocalDate.parse(checkIn.createdAt, dateFormat)
+
+        if (currentDate != previousDate) {
+            break
+        }
+        currentStreak++
+        previousDate = previousDate.minusDays(1)
+    }
+    return currentStreak
+}
+
 @HiltViewModel
 class RecordScreenViewModel @Inject constructor(
     private val offlineHabitsRepo: OfflineHabitsRepository,
@@ -56,23 +73,6 @@ class RecordScreenViewModel @Inject constructor(
         return checkIns.fold(false) { current, checkIn -> checkIn.createdAt == formatedToday }
     }
 
-    fun calcStreaks(checkIns: List<CheckIn>): Int {
-        if (checkIns.isEmpty()) return 0
-
-        var currentStreak = 0
-        var previousDate = LocalDate.now()
-        for (element in checkIns) {
-            val currentDate = LocalDate.parse(element.createdAt, dateFormat)
-
-            if (currentDate == previousDate) {
-                currentStreak++
-            } else {
-                break
-            }
-            previousDate = previousDate.minusDays(1)
-        }
-        return currentStreak
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllHabits() {
@@ -90,7 +90,7 @@ class RecordScreenViewModel @Inject constructor(
                 flowOf(habitsWithCheckins.map { habitWithCheckIn ->
                     HabitWithStreak(
                         habit = habitWithCheckIn.habit,
-                        streaks = calcStreaks(habitWithCheckIn.checkIns),
+                        streaks = calcStreaks(habitWithCheckIn.checkIns, LocalDate.now(), dateFormat),
                         hasTodayCheckIn = checkTodayCheckIn(habitWithCheckIn.checkIns)
                     )
                 })
