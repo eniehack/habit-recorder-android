@@ -141,9 +141,21 @@ fun HabitRecorderApp(
                     isHabitSelected = { habit ->
                         uiState.isSelectionMode && uiState.selectedItems.contains(habit)
                     },
-                    onHabitCardSelected = { habit ->
+                    onHabitCardClicked = {
+                        Log.d(
+                            "HabitBuilder",
+                            "mode: ${uiState.isSelectionMode}, target: ${it.habit} items: ${uiState.selectedItems}"
+                        )
                         if (uiState.isSelectionMode) {
-                            viewModel.addSelectedItem(habit)
+                            if (uiState.selectedItems.contains(it.habit)) {
+                                viewModel.removeSelectedItem(it.habit)
+                            } else {
+
+                                viewModel.addSelectedItem(it.habit)
+                            }
+                        } else {
+                            viewModel.onHabitCardClicked(it)
+                            Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = modifier,

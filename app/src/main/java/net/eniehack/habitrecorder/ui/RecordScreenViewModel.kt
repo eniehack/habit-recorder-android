@@ -32,7 +32,7 @@ data class HabitWithStreak(
 data class RecordScreenUiState(
     val habits: List<HabitWithStreak> = emptyList(),
     val isSelectionMode: Boolean = false,
-    val selectedItems: MutableSet<Habit> = mutableSetOf()
+    val selectedItems: Set<Habit> = setOf()
 )
 
 @HiltViewModel
@@ -135,14 +135,26 @@ class RecordScreenViewModel @Inject constructor(
         _uiState.update {current ->
             current.copy(
                 isSelectionMode = false,
-                selectedItems = mutableSetOf(),
+                selectedItems = setOf(),
             )
         }
     }
-    
+
     fun addSelectedItem(habit: Habit) = viewModelScope.launch {
-        _uiState.value.selectedItems.add(habit)
+        _uiState.update { current ->
+            current.copy(
+                selectedItems = current.selectedItems.toMutableSet().apply { add(habit) }
+            )
+        }
         Log.d("HabitRecorderApp", "updated selectedItems ${_uiState.value.selectedItems}")
+    }
+
+    fun removeSelectedItem(habit: Habit) = viewModelScope.launch {
+        _uiState.update { current ->
+            current.copy(
+                selectedItems = current.selectedItems.toMutableSet().apply { remove(habit) }
+            )
+        }
     }
 
     fun removeSelectedItemsFromDatabase(): Any = viewModelScope.launch {
@@ -150,6 +162,10 @@ class RecordScreenViewModel @Inject constructor(
             offlineHabitsRepo.deleteHabit(habit)
         }
         Log.d("HabitRecorderApp", "removed selectedItems ${_uiState.value.selectedItems}")
-        _uiState.value.selectedItems.clear()
+        _uiState.update { current ->
+            current.copy(
+                selectedItems = setOf()
+            )
+        }
     }
 }

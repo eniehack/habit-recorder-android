@@ -41,9 +41,9 @@ fun RecordScreen(
     modifier: Modifier = Modifier,
     habits: List<HabitWithStreak>,
     onHabitCardChecked: (HabitWithStreak) -> Unit = {},
+    onHabitCardClicked: (HabitWithStreak) -> Unit = {},
     onHabitCardEditButtonClicked: (Habit) -> Unit = {},
     onHabitCardLongPressed: (Habit) -> Unit = {},
-    onHabitCardSelected: (Habit) -> Unit = {},
     isHabitSelected: (Habit) -> Boolean = { false },
 ) {
     val haptics = LocalHapticFeedback.current
@@ -69,10 +69,7 @@ fun RecordScreen(
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             onHabitCardLongPressed(habit.habit)
                         },
-                        onClick = {
-
-                            onHabitCardSelected(habit.habit)
-                        },
+                        onClick = { onHabitCardClicked(habit) },
                         onLongClickLabel = "onLongClickLabel",
                     )
             )
