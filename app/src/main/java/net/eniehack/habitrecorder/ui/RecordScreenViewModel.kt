@@ -26,6 +26,7 @@ import javax.inject.Inject
 data class HabitWithStreak(
     val habit: Habit,
     val streaks: Int = 0,
+    val hasTodayCheckIn: Boolean = false,
 )
 
 data class RecordScreenUiState(
@@ -38,16 +39,23 @@ class RecordScreenViewModel @Inject constructor(
     private val offlineCheckInRepo: OfflineCheckInRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RecordScreenUiState())
+    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val uiState = _uiState.asStateFlow()
 
     init {
         getAllHabits()
     }
 
+    fun checkTodayCheckIn(checkIns: List<CheckIn>): Boolean {
+        if (checkIns.isEmpty()) return false
+        val today = LocalDate.now()
+        val formatedToday = today.format(dateFormat)
+        return checkIns.fold(false) { current, checkIn -> checkIn.createdAt == formatedToday }
+    }
+
     fun calcStreaks(checkIns: List<CheckIn>): Int {
         if (checkIns.isEmpty()) return 0
 
-        val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         var currentStreak = 0
         var previousDate = LocalDate.now()
         for (element in checkIns) {
@@ -80,6 +88,7 @@ class RecordScreenViewModel @Inject constructor(
                     HabitWithStreak(
                         habit = habitWithCheckIn.habit,
                         streaks = calcStreaks(habitWithCheckIn.checkIns),
+                        hasTodayCheckIn = checkTodayCheckIn(habitWithCheckIn.checkIns)
                     )
                 })
             }
@@ -107,14 +116,7 @@ class RecordScreenViewModel @Inject constructor(
             )
         } else {
             Log.d("HabitRecorderApp", "updating checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
-            offlineCheckInRepo.updateCheckIn(
-                checkIn.copy(
-                    id = checkIn.id,
-                    habitId = habitWithStreak.habit.id,
-                    createdAt = checkIn.createdAt,
-                    amount = checkIn.amount.inc(),
-                )
-            )
+            offlineCheckInRepo.deleteCheckIn(checkIn)
             Log.d("HabitRecorderApp", "updated checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
         }
     }

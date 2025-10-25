@@ -1,25 +1,22 @@
 package net.eniehack.habitrecorder.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,18 +29,18 @@ import net.eniehack.habitrecorder.data.HabitType
 @Composable
 fun RecordScreen(
     habits: List<HabitWithStreak>,
-    onHabitCardButtonClicked: (HabitWithStreak) -> Unit = {},
+    onHabitCardChecked: (HabitWithStreak) -> Unit = {},
     onHabitCardEditButtonClicked: (Habit) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.padding(15.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(top = 15.dp),
+        //verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(items = habits, key = { it.habit.id }) { habit ->
             HabitCard(
                 habitWithStreak = habit,
-                onAddButtonClicked = onHabitCardButtonClicked,
+                onChecked = onHabitCardChecked,
                 onEditButtonClicked = onHabitCardEditButtonClicked,
             )
         }
@@ -53,63 +50,49 @@ fun RecordScreen(
 @Composable
 fun HabitCard(
     habitWithStreak: HabitWithStreak,
-    onAddButtonClicked: (HabitWithStreak) -> Unit = {},
+    onChecked: (HabitWithStreak) -> Unit = {},
     onEditButtonClicked: (Habit) -> Unit = {},
-    onHabitCardClicked: (HabitWithStreak) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Card(
-        onClick = { onHabitCardClicked(habitWithStreak) },
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            .fillMaxWidth()
+            .padding(12.dp),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = modifier
-                .fillMaxSize()
-                .padding(15.dp),
+        Checkbox(
+            checked = habitWithStreak.hasTodayCheckIn,
+            onCheckedChange = { onChecked(habitWithStreak) }
+        )
+        Column(
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                Text(
-                    text = habitWithStreak.habit.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+            Text(
+                text = habitWithStreak.habit.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 2.dp, bottom = 2.dp)
+            )
+            Row {
+                Icon(
+                    painterResource(R.drawable.bolt_24px),
+                    null,
+                    modifier = Modifier.size(16.dp)
                 )
-                Row {
-                    Icon(
-                        painterResource(R.drawable.bolt_24px),
-                        null,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = "${habitWithStreak.streaks} streaks",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                Row (
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = modifier.fillMaxWidth()
-                        .padding(8.dp)
-                        .size(24.dp)
-                ){
-                    IconButton(
-                        onClick = { onAddButtonClicked(habitWithStreak) },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Done, "create check in instantly")
-                    }
-                    IconButton(
-                        onClick = { onEditButtonClicked(habitWithStreak.habit) },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Edit, "create check in")
-                    }
-                }
+                Text(
+                    text = "${habitWithStreak.streaks} streaks",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
-            Box(modifier.weight(1f))
+
+        }
+        Spacer(Modifier.weight(1f))
+        IconButton(
+            onClick = { onEditButtonClicked(habitWithStreak.habit) },
+            modifier = Modifier
+                .padding(8.dp)
+                .size(24.dp)
+        ) {
+            Icon(Icons.Default.Edit, "Edit habit")
         }
     }
 }
@@ -126,7 +109,8 @@ fun RecordHabitsScreenPreview() {
                     type = HabitType.ACHIEVEMENT,
                     unit = "回"
                 ),
-                streaks = 10
+                streaks = 10,
+                hasTodayCheckIn = true,
             ),
             HabitWithStreak(
                 habit = Habit(

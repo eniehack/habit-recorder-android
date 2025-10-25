@@ -89,11 +89,11 @@ fun HabitRecorderApp(
                     ) {
                         Icon(Icons.Filled.Add, "add new habits")
                     }
-                }
+                },
             ) { modifier ->
                 RecordScreen(
                     habits = uiState.habits,
-                    onHabitCardButtonClicked = { habit ->
+                    onHabitCardChecked = { habit ->
                         viewModel.onHabitCardClicked(habit)
                         Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
                     },
