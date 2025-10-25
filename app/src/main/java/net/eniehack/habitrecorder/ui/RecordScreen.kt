@@ -91,12 +91,6 @@ fun HabitCard(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clickable(
-                interactionSource = null,
-                indication = null,
-                onClickLabel = "click to record streak",
-                onClick = { onChecked(habitWithStreak) },
-            )
             .padding(12.dp),
     ) {
         Checkbox(
