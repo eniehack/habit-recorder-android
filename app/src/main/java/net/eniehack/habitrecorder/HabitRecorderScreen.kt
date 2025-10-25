@@ -138,7 +138,10 @@ fun HabitRecorderApp(
                         viewModel.enableSelectedMode()
                         viewModel.addSelectedItem(habit)
                     },
-                    onHabitCardClicked = { habit ->
+                    isHabitSelected = { habit ->
+                        uiState.isSelectionMode && uiState.selectedItems.contains(habit)
+                    },
+                    onHabitCardSelected = { habit ->
                         if (uiState.isSelectionMode) {
                             viewModel.addSelectedItem(habit)
                         }

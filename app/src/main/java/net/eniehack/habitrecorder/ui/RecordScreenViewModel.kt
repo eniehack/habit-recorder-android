@@ -32,7 +32,7 @@ data class HabitWithStreak(
 data class RecordScreenUiState(
     val habits: List<HabitWithStreak> = emptyList(),
     val isSelectionMode: Boolean = false,
-    val selectedItems: MutableList<Habit> = mutableListOf()
+    val selectedItems: MutableSet<Habit> = mutableSetOf()
 )
 
 @HiltViewModel
@@ -134,7 +134,8 @@ class RecordScreenViewModel @Inject constructor(
     fun disableSelectedMode() = viewModelScope.launch {
         _uiState.update {current ->
             current.copy(
-                isSelectionMode = false
+                isSelectionMode = false,
+                selectedItems = mutableSetOf(),
             )
         }
     }

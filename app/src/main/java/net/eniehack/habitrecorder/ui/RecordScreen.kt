@@ -1,6 +1,8 @@
 package net.eniehack.habitrecorder.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -40,18 +43,25 @@ fun RecordScreen(
     onHabitCardChecked: (HabitWithStreak) -> Unit = {},
     onHabitCardEditButtonClicked: (Habit) -> Unit = {},
     onHabitCardLongPressed: (Habit) -> Unit = {},
-    onHabitCardClicked: (Habit) -> Unit = {},
+    onHabitCardSelected: (Habit) -> Unit = {},
+    isHabitSelected: (Habit) -> Boolean = { false },
 ) {
     val haptics = LocalHapticFeedback.current
     LazyColumn(
         modifier = modifier.padding(top = 15.dp),
     ) {
         items(items = habits, key = { it.habit.id }) { habit ->
+            val backgroundColor = if (isHabitSelected(habit.habit)) {
+                Color.LightGray.copy(alpha = 0.5f) // 選択された色
+            } else {
+                MaterialTheme.colorScheme.surface // 通常の色
+            }
             HabitCard(
                 habitWithStreak = habit,
                 onChecked = onHabitCardChecked,
                 onEditButtonClicked = onHabitCardEditButtonClicked,
                 modifier = Modifier
+                    .background(backgroundColor)
                     .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -60,7 +70,8 @@ fun RecordScreen(
                             onHabitCardLongPressed(habit.habit)
                         },
                         onClick = {
-                            onHabitCardClicked(habit.habit)
+
+                            onHabitCardSelected(habit.habit)
                         },
                         onLongClickLabel = "onLongClickLabel",
                     )
@@ -80,6 +91,12 @@ fun HabitCard(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
+            .clickable(
+                interactionSource = null,
+                indication = null,
+                onClickLabel = "click to record streak",
+                onClick = { onChecked(habitWithStreak) },
+            )
             .padding(12.dp),
     ) {
         Checkbox(
