@@ -4,11 +4,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -66,6 +69,7 @@ fun BottomNavigationBar(
     val items = listOf(Pair("record", Icons.Default.Edit), Pair("analytics", R.drawable.monitoring_24px))
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitRecorderApp(
     navController: NavHostController = rememberNavController()
@@ -90,6 +94,36 @@ fun HabitRecorderApp(
                         Icon(Icons.Filled.Add, "add new habits")
                     }
                 },
+                topBar ={
+                    if (uiState.isSelectionMode) {
+                        TopAppBar(
+                            title = { Text("選択") },
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    viewModel.disableSelectedMode()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Localized description"
+                                    )
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    val deletedItemLength = uiState.selectedItems.size
+                                    viewModel.removeSelectedItemsFromDatabase()
+                                    viewModel.disableSelectedMode()
+                                    Toast.makeText(context, "deleted $deletedItemLength items", Toast.LENGTH_SHORT).show()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Delete,
+                                        contentDescription = "Delete selected items"
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
             ) { modifier ->
                 RecordScreen(
                     habits = uiState.habits,
@@ -99,6 +133,15 @@ fun HabitRecorderApp(
                     },
                     onHabitCardEditButtonClicked = { habit ->
                         navController.navigate(EditHabitNavigationArgument(habitId = habit.id))
+                    },
+                    onHabitCardLongPressed = { habit ->
+                        viewModel.enableSelectedMode()
+                        viewModel.addSelectedItem(habit)
+                    },
+                    onHabitCardClicked = { habit ->
+                        if (uiState.isSelectionMode) {
+                            viewModel.addSelectedItem(habit)
+                        }
                     },
                     modifier = modifier,
                 )

@@ -30,7 +30,9 @@ data class HabitWithStreak(
 )
 
 data class RecordScreenUiState(
-    val habits: List<HabitWithStreak> = emptyList()
+    val habits: List<HabitWithStreak> = emptyList(),
+    val isSelectionMode: Boolean = false,
+    val selectedItems: MutableList<Habit> = mutableListOf()
 )
 
 @HiltViewModel
@@ -119,5 +121,34 @@ class RecordScreenViewModel @Inject constructor(
             offlineCheckInRepo.deleteCheckIn(checkIn)
             Log.d("HabitRecorderApp", "updated checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
         }
+    }
+
+    fun enableSelectedMode() = viewModelScope.launch {
+        _uiState.update {current ->
+            current.copy(
+                isSelectionMode = true
+            )
+        }
+    }
+
+    fun disableSelectedMode() = viewModelScope.launch {
+        _uiState.update {current ->
+            current.copy(
+                isSelectionMode = false
+            )
+        }
+    }
+    
+    fun addSelectedItem(habit: Habit) = viewModelScope.launch {
+        _uiState.value.selectedItems.add(habit)
+        Log.d("HabitRecorderApp", "updated selectedItems ${_uiState.value.selectedItems}")
+    }
+
+    fun removeSelectedItemsFromDatabase(): Any = viewModelScope.launch {
+        _uiState.value.selectedItems.map { habit ->
+            offlineHabitsRepo.deleteHabit(habit)
+        }
+        Log.d("HabitRecorderApp", "removed selectedItems ${_uiState.value.selectedItems}")
+        _uiState.value.selectedItems.clear()
     }
 }

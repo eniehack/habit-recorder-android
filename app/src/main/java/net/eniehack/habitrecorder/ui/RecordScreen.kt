@@ -1,5 +1,8 @@
 package net.eniehack.habitrecorder.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +19,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,22 +32,38 @@ import net.eniehack.habitrecorder.R
 import net.eniehack.habitrecorder.data.Habit
 import net.eniehack.habitrecorder.data.HabitType
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecordScreen(
+    modifier: Modifier = Modifier,
     habits: List<HabitWithStreak>,
     onHabitCardChecked: (HabitWithStreak) -> Unit = {},
     onHabitCardEditButtonClicked: (Habit) -> Unit = {},
-    modifier: Modifier = Modifier
+    onHabitCardLongPressed: (Habit) -> Unit = {},
+    onHabitCardClicked: (Habit) -> Unit = {},
 ) {
+    val haptics = LocalHapticFeedback.current
     LazyColumn(
         modifier = modifier.padding(top = 15.dp),
-        //verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(items = habits, key = { it.habit.id }) { habit ->
             HabitCard(
                 habitWithStreak = habit,
                 onChecked = onHabitCardChecked,
                 onEditButtonClicked = onHabitCardEditButtonClicked,
+                modifier = Modifier
+                    .combinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onLongClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onHabitCardLongPressed(habit.habit)
+                        },
+                        onClick = {
+                            onHabitCardClicked(habit.habit)
+                        },
+                        onLongClickLabel = "onLongClickLabel",
+                    )
             )
         }
     }
@@ -64,8 +86,7 @@ fun HabitCard(
             checked = habitWithStreak.hasTodayCheckIn,
             onCheckedChange = { onChecked(habitWithStreak) }
         )
-        Column(
-        ) {
+        Column {
             Text(
                 text = habitWithStreak.habit.title,
                 style = MaterialTheme.typography.titleMedium,
