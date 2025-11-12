@@ -9,10 +9,15 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -20,8 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,10 +39,13 @@ import net.eniehack.habitrecorder.ui.EditHabitScreen
 import net.eniehack.habitrecorder.ui.EditHabitScreenViewModel
 import net.eniehack.habitrecorder.ui.RecordScreen
 import net.eniehack.habitrecorder.ui.RecordScreenViewModel
+import net.eniehack.habitrecorder.ui.SettingScreen
+import net.eniehack.habitrecorder.ui.SettingsScreenViewModel
 
 enum class HabitRecorderScreen {
     HabitRecord,
-    EditHabit
+    History,
+    Setting,
 }
 
 @Serializable
