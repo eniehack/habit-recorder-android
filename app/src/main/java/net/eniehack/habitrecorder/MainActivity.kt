@@ -8,8 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.core.DataStore
 import dagger.hilt.android.AndroidEntryPoint
 import net.eniehack.habitrecorder.data.HabitDatabase
+import net.eniehack.habitrecorder.snippets.proto.PixelaUserCredentials
 import net.eniehack.habitrecorder.ui.theme.HabitRecorderTheme
 import javax.inject.Inject
 
@@ -17,6 +19,9 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var habitDatabase: HabitDatabase
+
+    @Inject
+    lateinit var pixelaCredentialStore: DataStore<PixelaUserCredentials>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

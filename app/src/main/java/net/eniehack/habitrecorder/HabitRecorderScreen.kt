@@ -233,5 +233,28 @@ fun HabitRecorderApp(
                 )
             }
         }
+        composable(route = HabitRecorderScreen.Setting.name) {
+            val viewModel = hiltViewModel<SettingsScreenViewModel>()
+            val uiState by viewModel.uiState.collectAsState()
+            HabitRecorderScaffold(
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController
+                    )
+                }
+            ) { modifier ->
+                SettingScreen(
+                    modifier,
+                    uiState.pixelaUserId,
+                    uiState.pixelaToken,
+                    showDialog = uiState.showPixelaCredentialDialog,
+                    onUserIdChanged = { viewModel.onPixelaUserIdChanged(it) },
+                    onTokenChanged = { viewModel.onPixelaTokenChanged(it) },
+                    onDialogEnabled = { viewModel.togglePixelaCredentialDialog() },
+                    onConformButtonClicked = { viewModel.savePixelaCredential(); viewModel.togglePixelaCredentialDialog() },
+                    onDismissButtonClicked = { viewModel.togglePixelaCredentialDialog() }
+                )
+            }
+        }
     }
 }
