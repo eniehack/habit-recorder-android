@@ -50,24 +50,65 @@ fun HabitRecorderScaffold(
             title = { Text("HabitRecorder") }
         )
     },
+    bottomBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     child: @Composable (Modifier) -> Unit = {},
 ) {
     Scaffold(
         topBar = { topBar() },
+        bottomBar = { bottomBar() },
         floatingActionButton = { floatingActionButton() },
-        bottomBar = {
-        }
     ) { innerPadding ->
         child(Modifier.padding(innerPadding))
     }
 }
 
+data class NavigationItem(
+    val name: String,
+    val route: HabitRecorderScreen,
+    val enabledIcon: ImageVector,
+    val disabledIcon: ImageVector,
+)
+
 @Composable
 fun BottomNavigationBar(
     navController: NavHostController = rememberNavController()
 ) {
-    val items = listOf(Pair("record", Icons.Default.Edit), Pair("analytics", R.drawable.monitoring_24px))
+    val items = listOf(
+        NavigationItem(
+            "record",
+            HabitRecorderScreen.HabitRecord,
+            Icons.Filled.Edit,
+            Icons.Outlined.Edit
+        ),
+        NavigationItem(
+            "history",
+            HabitRecorderScreen.History,
+            ImageVector.vectorResource(R.drawable.history),
+            ImageVector.vectorResource(R.drawable.history)
+        ),
+        NavigationItem(
+            "settings",
+            HabitRecorderScreen.Setting,
+            Icons.Filled.Settings,
+            Icons.Outlined.Settings
+        ),
+    )
+    NavigationBar() {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        item.enabledIcon,
+                        contentDescription = item.name,
+                    )
+                },
+                selected = navController.currentDestination?.hierarchy?.any { it.route == item.route.name } == true,
+                onClick = { navController.navigate(item.route.name) },
+                label = { Text(item.name) }
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -127,6 +168,11 @@ fun HabitRecorderApp(
                             }
                         )
                     }
+                },
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController
+                    )
                 }
             ) { modifier ->
                 RecordScreen(
