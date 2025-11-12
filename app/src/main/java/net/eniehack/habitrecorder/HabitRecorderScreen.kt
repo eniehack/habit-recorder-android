@@ -240,6 +240,9 @@ fun HabitRecorderApp(
                             inclusive = false
                         )
                     },
+                    onPixelaIdChanged = {
+                        viewModel.onPixelaIdChanged(it)
+                    },
                     modifier = modifier,
                 )
             }

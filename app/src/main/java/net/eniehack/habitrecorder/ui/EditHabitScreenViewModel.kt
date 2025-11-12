@@ -21,6 +21,7 @@ data class EditHabitScreenUiState(
         title = "",
         unit = "",
         type = HabitType.ACHIEVEMENT,
+        pixelaId = null
     )
 )
 
@@ -73,6 +74,16 @@ class EditHabitScreenViewModel @Inject constructor(savedStateHandle: SavedStateH
             current.copy(
                 habit = newHabit
             )
+        }
+    }
+
+    fun onPixelaIdChanged(pixelaId: String?) = viewModelScope.launch {
+        if (pixelaId != null) {
+            _uiState.update {  current ->
+                current.copy(
+                    habit = current.habit.copy(pixelaId = pixelaId)
+                )
+            }
         }
     }
 

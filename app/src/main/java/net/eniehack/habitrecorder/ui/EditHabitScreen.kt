@@ -60,6 +60,11 @@ fun EditHabitScreen(
             onValueChange = { onUnitChanged(it) },
             label = { Text("unit") },
         )
+        TextField(
+            value = habit.pixelaId ?: "",
+            onValueChange = { onPixelaIdChanged(it) },
+            label = { Text("pixela id") }
+        )
         Button(
             onClick = {
                 onButtonClick()
