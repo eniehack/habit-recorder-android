@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +42,7 @@ fun SettingScreen(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismissButtonClicked() },
-            title = { Text("ユーザー認証情報を編集") },
+            title = { Text("pixe.la 認証情報を入力") },
             text = {
                 Column {
                     OutlinedTextField(
@@ -69,7 +69,7 @@ fun SettingScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { onConformButtonClicked() }) { Text("保存") }
+                Button(onClick = { onConformButtonClicked() } ) { Text("保存") }
             },
             dismissButton = {
                 TextButton(onClick = { onDismissButtonClicked() }) { Text("キャンセル") }
