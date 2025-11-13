@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,11 +27,18 @@ data class EditHabitScreenUiState(
     )
 )
 
+sealed class EditHabitScreenEvent {
+    data class Toast(val message: String): EditHabitScreenEvent()
+}
+
 @HiltViewModel
 class EditHabitScreenViewModel @Inject constructor(savedStateHandle: SavedStateHandle, private val habitDao: HabitDao) : ViewModel() {
     private val argument = savedStateHandle.toRoute<EditHabitNavigationArgument>()
     private val _uiState = MutableStateFlow(EditHabitScreenUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<EditHabitScreenEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     init {
         if (argument.habitId != null) {
@@ -61,10 +70,12 @@ class EditHabitScreenViewModel @Inject constructor(savedStateHandle: SavedStateH
             habitDao.insert(
                 _uiState.value.habit
             )
+            _eventFlow.emit(EditHabitScreenEvent.Toast("added"))
         } else {
             habitDao.update(
                 _uiState.value.habit
             )
+            _eventFlow.emit(EditHabitScreenEvent.Toast("updated"))
         }
     }
 

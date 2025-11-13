@@ -22,6 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -36,8 +37,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 import net.eniehack.habitrecorder.ui.EditHabitScreen
+import net.eniehack.habitrecorder.ui.EditHabitScreenEvent
 import net.eniehack.habitrecorder.ui.EditHabitScreenViewModel
 import net.eniehack.habitrecorder.ui.RecordScreen
+import net.eniehack.habitrecorder.ui.RecordScreenEvent
 import net.eniehack.habitrecorder.ui.RecordScreenViewModel
 import net.eniehack.habitrecorder.ui.SettingScreen
 import net.eniehack.habitrecorder.ui.SettingsScreenEvent
@@ -191,11 +194,19 @@ fun HabitRecorderApp(
                     )
                 }
             ) { modifier ->
+
+                LaunchedEffect(Unit) {
+                    viewModel.eventFlow.collect { event ->
+                        when (event) {
+                            is RecordScreenEvent.Toast ->
+                                Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
                 RecordScreen(
                     habits = uiState.habits,
                     onHabitCardChecked = { habit ->
                         viewModel.onHabitCardClicked(habit)
-                        Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
                     },
                     onHabitCardEditButtonClicked = { it ->
                         navController.navigate(EditHabitNavigationArgument(habitId = it.id))
@@ -220,7 +231,6 @@ fun HabitRecorderApp(
                             }
                         } else {
                             viewModel.onHabitCardClicked(it)
-                            Toast.makeText(context, "checked in", Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = modifier,
@@ -231,6 +241,14 @@ fun HabitRecorderApp(
             val viewModel = hiltViewModel<EditHabitScreenViewModel>()
             val uiState by viewModel.uiState.collectAsState()
             val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                viewModel.eventFlow.collect { event ->
+                    when (event) {
+                        is EditHabitScreenEvent.Toast ->
+                            Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
             HabitRecorderScaffold { modifier ->
                 EditHabitScreen(
                     habit = uiState.habit,
@@ -238,7 +256,6 @@ fun HabitRecorderApp(
                     onUnitChanged = { viewModel.onUnitChanged(it) },
                     onButtonClick = {
                         viewModel.onSubmit()
-                        Toast.makeText(context, "added", Toast.LENGTH_SHORT).show()
                         navController.popBackStack(
                             HabitRecorderScreen.HabitRecord.name,
                             inclusive = false

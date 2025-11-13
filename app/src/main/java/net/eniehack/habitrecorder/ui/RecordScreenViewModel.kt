@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -54,6 +56,10 @@ fun calcStreaks(checkIns: List<CheckIn>, baseDate: LocalDate, dateFormat: DateTi
     return currentStreak
 }
 
+sealed class RecordScreenEvent {
+    data class Toast(val message: String): RecordScreenEvent()
+}
+
 @HiltViewModel
 class RecordScreenViewModel @Inject constructor(
     private val offlineHabitsRepo: OfflineHabitsRepository,
@@ -63,6 +69,9 @@ class RecordScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RecordScreenUiState())
     private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val uiState = _uiState.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<RecordScreenEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     init {
         getAllHabits()
@@ -129,6 +138,7 @@ class RecordScreenViewModel @Inject constructor(
             if (habitWithStreak.habit.pixelaId != null) {
                 createCheckInOnPixela(habitWithStreak.habit.pixelaId)
             }
+            _eventFlow.emit(RecordScreenEvent.Toast("check in"))
         } else {
             Log.d(
                 "HabitRecorderApp",
@@ -194,12 +204,14 @@ class RecordScreenViewModel @Inject constructor(
 
     fun createCheckInOnPixela(pixelaId: String) = viewModelScope.launch {
         val credential = pixelaCredentialRepo.read().firstOrNull()
-        if (credential != null) {
-            PixelaApi.retrofitService.increment(
-                graphId = pixelaId,
-                userId = credential.userId,
-                userToken = credential.token,
-            )
+        if (credential == null) {
+            _eventFlow.emit(RecordScreenEvent.Toast("credential not set"))
+            return@launch
         }
+        val resp = PixelaApi.retrofitService.increment(
+            graphId = pixelaId,
+            userId = credential.userId,
+            userToken = credential.token,
+        )
     }
 }

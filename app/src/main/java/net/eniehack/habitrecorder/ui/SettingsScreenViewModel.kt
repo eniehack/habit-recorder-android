@@ -1,6 +1,5 @@
 package net.eniehack.habitrecorder.ui
 
-import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
