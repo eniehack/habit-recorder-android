@@ -1,7 +1,6 @@
 package net.eniehack.habitrecorder.ui
 
 import android.util.Log
-import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,6 +79,7 @@ class RecordScreenViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllHabits() {
         offlineHabitsRepo.getHabitsWithCheckInsStream().flatMapLatest { habitsWithCheckins ->
+            Log.d("HabitBuilder", "${habitsWithCheckins}")
             if (habitsWithCheckins.isEmpty()) {
                 offlineHabitsRepo.getAllHabitStream().map { habits ->
                     habits.map { habit ->
@@ -91,6 +91,7 @@ class RecordScreenViewModel @Inject constructor(
                 }
             } else {
                 flowOf(habitsWithCheckins.map { habitWithCheckIn ->
+                    Log.d("HabitBuilder", "streaks: ${calcStreaks(habitWithCheckIn.checkIns, LocalDate.now(), dateFormat)}")
                     HabitWithStreak(
                         habit = habitWithCheckIn.habit,
                         streaks = calcStreaks(habitWithCheckIn.checkIns, LocalDate.now(), dateFormat),
@@ -113,7 +114,12 @@ class RecordScreenViewModel @Inject constructor(
             date = LocalDate.now()
         ).firstOrNull()
         if (checkIn == null) {
-            Log.d("habitrecorder", "inserting checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
+            Log.d(
+                "habitrecorder",
+                "inserting checkin (${habitWithStreak.habit.id}, ${
+                    LocalDate.now().format(dateFormat)
+                })"
+            )
             offlineCheckInRepo.insertCheckIn(
                 CheckIn(
                     habitId = habitWithStreak.habit.id,
@@ -124,14 +130,24 @@ class RecordScreenViewModel @Inject constructor(
                 createCheckInOnPixela(habitWithStreak.habit.pixelaId)
             }
         } else {
-            Log.d("HabitRecorderApp", "updating checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
+            Log.d(
+                "HabitRecorderApp",
+                "updating checkin (${habitWithStreak.habit.id}, ${
+                    LocalDate.now().format(dateFormat)
+                })"
+            )
             offlineCheckInRepo.deleteCheckIn(checkIn)
-            Log.d("HabitRecorderApp", "updated checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
+            Log.d(
+                "HabitRecorderApp",
+                "updated checkin (${habitWithStreak.habit.id}, ${
+                    LocalDate.now().format(dateFormat)
+                })"
+            )
         }
     }
 
     fun enableSelectedMode() = viewModelScope.launch {
-        _uiState.update {current ->
+        _uiState.update { current ->
             current.copy(
                 isSelectionMode = true
             )
@@ -139,7 +155,7 @@ class RecordScreenViewModel @Inject constructor(
     }
 
     fun disableSelectedMode() = viewModelScope.launch {
-        _uiState.update {current ->
+        _uiState.update { current ->
             current.copy(
                 isSelectionMode = false,
                 selectedItems = setOf(),

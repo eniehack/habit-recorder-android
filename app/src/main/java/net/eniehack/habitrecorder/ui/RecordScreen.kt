@@ -53,6 +53,7 @@ fun RecordScreen(
             } else {
                 MaterialTheme.colorScheme.surface // 通常の色
             }
+
             HabitCard(
                 habitWithStreak = habit,
                 onChecked = onHabitCardChecked,

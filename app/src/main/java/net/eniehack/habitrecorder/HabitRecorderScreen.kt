@@ -150,7 +150,7 @@ fun HabitRecorderApp(
                         Icon(Icons.Filled.Add, "add new habits")
                     }
                 },
-                topBar ={
+                topBar = {
                     if (uiState.isSelectionMode) {
                         TopAppBar(
                             title = { Text("選択") },
@@ -169,7 +169,11 @@ fun HabitRecorderApp(
                                     val deletedItemLength = uiState.selectedItems.size
                                     viewModel.removeSelectedItemsFromDatabase()
                                     viewModel.disableSelectedMode()
-                                    Toast.makeText(context, "deleted $deletedItemLength items", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "deleted $deletedItemLength items",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }) {
                                     Icon(
                                         imageVector = Icons.Filled.Delete,
