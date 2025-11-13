@@ -40,6 +40,7 @@ import net.eniehack.habitrecorder.ui.EditHabitScreenViewModel
 import net.eniehack.habitrecorder.ui.RecordScreen
 import net.eniehack.habitrecorder.ui.RecordScreenViewModel
 import net.eniehack.habitrecorder.ui.SettingScreen
+import net.eniehack.habitrecorder.ui.SettingsScreenEvent
 import net.eniehack.habitrecorder.ui.SettingsScreenViewModel
 
 enum class HabitRecorderScreen {

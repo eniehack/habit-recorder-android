@@ -18,7 +18,8 @@ data class SettingsScreenUiState(
     val pixelaUserId : String = "",
     val pixelaToken : String = "",
     val showPixelaCredentialDialog : Boolean = false,
-    val checkingPixelaCredentials : Boolean = false
+    val checkingPixelaCredentials : Boolean = false,
+    val pixelaDialogErrorMessage: String? = null
 )
 
 sealed class SettingsScreenEvent{
@@ -67,6 +68,7 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun savePixelaCredential() = viewModelScope.launch {
         toggleCheckingCredentialState()
+        setPixelaDialogErrorMessage(null)
         val resp = PixelaApi.retrofitService.getGraphDefinitions(userId = uiState.value.pixelaUserId, userToken = uiState.value.pixelaToken)
         if (resp.code() == 503) {
             _eventFlow.emit(SettingsScreenEvent.Toast("please press button again."))
@@ -75,11 +77,13 @@ class SettingsScreenViewModel @Inject constructor(
         }
         if (!resp.isSuccessful) {
             _eventFlow.emit(SettingsScreenEvent.Toast("failed to sign in pixela"))
+            setPixelaDialogErrorMessage("invalid userid or token")
             toggleCheckingCredentialState()
             return@launch
         }
         pixelaCredentialRepo.save(uiState.value.pixelaUserId, uiState.value.pixelaToken)
         togglePixelaCredentialDialog()
+        setPixelaDialogErrorMessage(null)
         _eventFlow.emit(SettingsScreenEvent.Toast("credential saved"))
     }
 
@@ -95,6 +99,14 @@ class SettingsScreenViewModel @Inject constructor(
         _uiState.update { current ->
             current.copy(
                 checkingPixelaCredentials = !current.checkingPixelaCredentials
+            )
+        }
+    }
+
+    private fun setPixelaDialogErrorMessage(message: String?) = viewModelScope.launch {
+        _uiState.update { current ->
+            current.copy(
+                pixelaDialogErrorMessage = message
             )
         }
     }

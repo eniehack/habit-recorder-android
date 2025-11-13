@@ -73,6 +73,7 @@ fun SettingScreen(
     userId: String,
     token: String,
     showDialog: Boolean,
+    errorMessage: String?= null,
     onUserIdChanged: (String) -> Unit = {},
     onTokenChanged: (String) -> Unit = {},
     onDialogEnabled: () -> Unit = {},
@@ -108,6 +109,9 @@ fun SettingScreen(
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
+                    errorMessage?.let {
+                        Text(it, color = MaterialTheme.colorScheme.error)
+                    }
                 }
             },
             confirmButton = {
