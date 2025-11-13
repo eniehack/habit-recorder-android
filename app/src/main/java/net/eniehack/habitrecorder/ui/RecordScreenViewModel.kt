@@ -20,6 +20,8 @@ import net.eniehack.habitrecorder.data.CheckIn
 import net.eniehack.habitrecorder.data.Habit
 import net.eniehack.habitrecorder.data.OfflineCheckInRepository
 import net.eniehack.habitrecorder.data.OfflineHabitsRepository
+import net.eniehack.habitrecorder.data.PixelaApi
+import net.eniehack.habitrecorder.data.PixelaCredentialRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -56,7 +58,8 @@ fun calcStreaks(checkIns: List<CheckIn>, baseDate: LocalDate, dateFormat: DateTi
 @HiltViewModel
 class RecordScreenViewModel @Inject constructor(
     private val offlineHabitsRepo: OfflineHabitsRepository,
-    private val offlineCheckInRepo: OfflineCheckInRepository
+    private val offlineCheckInRepo: OfflineCheckInRepository,
+    private val pixelaCredentialRepo: PixelaCredentialRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RecordScreenUiState())
     private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -117,6 +120,9 @@ class RecordScreenViewModel @Inject constructor(
                     createdAt = LocalDate.now().format(dateFormat)
                 )
             )
+            if (habitWithStreak.habit.pixelaId != null) {
+                createCheckInOnPixela(habitWithStreak.habit.pixelaId)
+            }
         } else {
             Log.d("HabitRecorderApp", "updating checkin (${habitWithStreak.habit.id}, ${LocalDate.now().format(dateFormat)})")
             offlineCheckInRepo.deleteCheckIn(checkIn)
@@ -166,6 +172,17 @@ class RecordScreenViewModel @Inject constructor(
         _uiState.update { current ->
             current.copy(
                 selectedItems = setOf()
+            )
+        }
+    }
+
+    fun createCheckInOnPixela(pixelaId: String) = viewModelScope.launch {
+        val credential = pixelaCredentialRepo.read().firstOrNull()
+        if (credential != null) {
+            PixelaApi.retrofitService.increment(
+                graphId = pixelaId,
+                userId = credential.userId,
+                userToken = credential.token,
             )
         }
     }
