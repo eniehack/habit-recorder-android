@@ -8,13 +8,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -22,50 +20,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
-
-data class PixelaSettings(
-    val userId: String = "",
-    val apiKey: String = "",
-)
-
-@Composable
-fun PixelaSettingApiKeyDialog(
-    apiKey: String,
-    modifier: Modifier = Modifier,
-    onApiKeyChanged: (String) -> Unit = {},
-) {
-    TextField(
-        value = apiKey,
-        onValueChange = { onApiKeyChanged(it) },
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done,
-        ),
-        label = { Text("API Key") },
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PixelaUserIdSettingDialog(
-    userId: String,
-    modifier: Modifier = Modifier,
-    onUserIdChanged: (String) -> Unit = {},
-) {
-    BasicAlertDialog(
-        onDismissRequest = TODO(),
-        modifier = modifier,
-        properties = DialogProperties()
-    ) {
-        TextField(
-            value = userId,
-            onValueChange = { onUserIdChanged(it) },
-            label = { Text("user id") }
-        )
-    }
-}
 
 @Composable
 fun SettingScreen(

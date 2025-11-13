@@ -81,14 +81,14 @@ class RecordScreenViewModel @Inject constructor(
         if (checkIns.isEmpty()) return false
         val today = LocalDate.now()
         val formatedToday = today.format(dateFormat)
-        return checkIns.fold(false) { current, checkIn -> checkIn.createdAt == formatedToday }
+        return checkIns.fold(false) { _, checkIn -> checkIn.createdAt == formatedToday }
     }
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllHabits() {
         offlineHabitsRepo.getHabitsWithCheckInsStream().flatMapLatest { habitsWithCheckins ->
-            Log.d("HabitBuilder", "${habitsWithCheckins}")
+            Log.d("HabitBuilder", habitsWithCheckins.toString())
             if (habitsWithCheckins.isEmpty()) {
                 offlineHabitsRepo.getAllHabitStream().map { habits ->
                     habits.map { habit ->

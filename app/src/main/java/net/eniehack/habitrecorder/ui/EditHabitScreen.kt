@@ -17,7 +17,6 @@ import net.eniehack.habitrecorder.data.HabitType
 @Composable
 fun EditHabitScreen(
     habit: Habit,
-    onDismissHabitTypeSelector: () -> Unit = {},
     onButtonClick: () -> Unit = {},
     onPixelaIdChanged: (String?) -> Unit = {},
     onTitleChanged: (String) -> Unit = {},
@@ -35,26 +34,6 @@ fun EditHabitScreen(
             onValueChange = { onTitleChanged(it) },
             label = { Text("title") }
         )
-        /*
-        DropdownMenu(expanded = habitTypeSelectExpand, onDismissRequest = onDismissHabitTypeSelector) {
-            DropdownMenuItem(
-                text = { Text("achievement") },
-                onClick = {},
-                leadingIcon = { Icon(Icons.Default.Check, "check icon") }
-            )
-            DropdownMenuItem(
-                text = { Text("record") },
-                onClick = {},
-                leadingIcon = { Icon(Icons.Default.Edit, "recording icon") }
-            )
-        }
-        TextField(
-            value = habit.amount.toString(),
-            onValueChange = { onAmountChanged(it.toIntOrNull()) },
-            label = { Text("amount") },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-        )
-         */
         TextField(
             value = habit.unit,
             onValueChange = { onUnitChanged(it) },

@@ -110,7 +110,7 @@ fun BottomNavigationBar(
         ),
     )
     NavigationBar() {
-        items.forEachIndexed { index, item ->
+        items.forEach { item ->
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -208,14 +208,14 @@ fun HabitRecorderApp(
                     onHabitCardChecked = { habit ->
                         viewModel.onHabitCardClicked(habit)
                     },
-                    onHabitCardEditButtonClicked = { it ->
+                    onHabitCardEditButtonClicked = {
                         navController.navigate(EditHabitNavigationArgument(habitId = it.id))
                     },
-                    onHabitCardLongPressed = { it ->
+                    onHabitCardLongPressed = {
                         viewModel.enableSelectedMode()
                         viewModel.addSelectedItem(it)
                     },
-                    isHabitSelected = { it ->
+                    isHabitSelected = {
                         uiState.isSelectionMode && uiState.selectedItems.contains(it)
                     },
                     onHabitCardClicked = {
