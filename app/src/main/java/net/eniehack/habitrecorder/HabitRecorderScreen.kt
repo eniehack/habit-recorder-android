@@ -215,7 +215,6 @@ fun HabitRecorderApp(
                             if (uiState.selectedItems.contains(it.habit)) {
                                 viewModel.removeSelectedItem(it.habit)
                             } else {
-
                                 viewModel.addSelectedItem(it.habit)
                             }
                         } else {

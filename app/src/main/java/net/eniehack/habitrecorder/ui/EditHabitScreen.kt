@@ -19,7 +19,7 @@ fun EditHabitScreen(
     habit: Habit,
     onDismissHabitTypeSelector: () -> Unit = {},
     onButtonClick: () -> Unit = {},
-    onAmountChanged: (Int?) -> Unit = {},
+    onPixelaIdChanged: (String?) -> Unit = {},
     onTitleChanged: (String) -> Unit = {},
     onUnitChanged: (String) -> Unit = {},
     modifier: Modifier = Modifier,
