@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.data.CheckIn
 import net.eniehack.habitrecorder.data.Habit
@@ -23,6 +25,8 @@ import net.eniehack.habitrecorder.data.OfflineCheckInRepository
 import net.eniehack.habitrecorder.data.OfflineHabitsRepository
 import net.eniehack.habitrecorder.data.PixelaApi
 import net.eniehack.habitrecorder.data.PixelaCredentialRepository
+import net.eniehack.habitrecorder.data.UserPreferencesRepository
+import net.eniehack.habitrecorder.snippets.proto.UserPreferences
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -64,7 +68,8 @@ sealed class RecordScreenEvent {
 class RecordScreenViewModel @Inject constructor(
     private val offlineHabitsRepo: OfflineHabitsRepository,
     private val offlineCheckInRepo: OfflineCheckInRepository,
-    private val pixelaCredentialRepo: PixelaCredentialRepository
+    private val pixelaCredentialRepo: PixelaCredentialRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RecordScreenUiState())
     private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -72,6 +77,9 @@ class RecordScreenViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<RecordScreenEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    private val userPrefs = userPreferencesRepository.preferenceFlow.stateIn(viewModelScope,
+        SharingStarted.WhileSubscribed(), UserPreferences.getDefaultInstance())
 
     init {
         getAllHabits()
@@ -135,7 +143,7 @@ class RecordScreenViewModel @Inject constructor(
                     createdAt = LocalDate.now().format(dateFormat)
                 )
             )
-            if (habitWithStreak.habit.pixelaId != null) {
+            if (habitWithStreak.habit.pixelaId != null && userPrefs.value.enablePixela) {
                 createCheckInOnPixela(habitWithStreak.habit.pixelaId)
             }
             _eventFlow.emit(RecordScreenEvent.Toast("check in"))

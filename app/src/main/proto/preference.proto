@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+// パッケージ名とJavaクラス名を指定
+option java_package = "net.eniehack.habitrecorder.snippets.proto";
+option java_multiple_files = true;
+
+// 認証データを保持するメッセージ
+message UserPreferences {
+  bool enablePixela = 1;
+}

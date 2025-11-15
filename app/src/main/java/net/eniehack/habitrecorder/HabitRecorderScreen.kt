@@ -293,12 +293,14 @@ fun HabitRecorderApp(
                     modifier,
                     uiState.pixelaUserId,
                     uiState.pixelaToken,
+                    enablePixelaFeature = uiState.pixelaEnabled,
                     showDialog = uiState.showPixelaCredentialDialog,
                     onUserIdChanged = { viewModel.onPixelaUserIdChanged(it) },
                     onTokenChanged = { viewModel.onPixelaTokenChanged(it) },
                     onDialogEnabled = { viewModel.togglePixelaCredentialDialog() },
                     onConformButtonClicked = { viewModel.savePixelaCredential() },
-                    onDismissButtonClicked = { viewModel.togglePixelaCredentialDialog() }
+                    onDismissButtonClicked = { viewModel.togglePixelaCredentialDialog() },
+                    onPixelaFeatureToggled = { viewModel.togglePixelaFeature(it) }
                 )
             }
         }

@@ -12,6 +12,7 @@ import androidx.datastore.core.DataStore
 import dagger.hilt.android.AndroidEntryPoint
 import net.eniehack.habitrecorder.data.HabitDatabase
 import net.eniehack.habitrecorder.snippets.proto.PixelaUserCredentials
+import net.eniehack.habitrecorder.snippets.proto.UserPreferences
 import net.eniehack.habitrecorder.ui.theme.HabitRecorderTheme
 import javax.inject.Inject
 
@@ -22,6 +23,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var pixelaCredentialStore: DataStore<PixelaUserCredentials>
+
+    @Inject
+    lateinit var userPreferencesStore: DataStore<UserPreferences>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

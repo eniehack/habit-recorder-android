@@ -7,10 +7,13 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.data.PixelaApi
 import net.eniehack.habitrecorder.data.PixelaCredentialRepository
+import net.eniehack.habitrecorder.data.UserPreferencesRepository
 import javax.inject.Inject
 
 data class SettingsScreenUiState(
@@ -18,7 +21,8 @@ data class SettingsScreenUiState(
     val pixelaToken : String = "",
     val showPixelaCredentialDialog : Boolean = false,
     val checkingPixelaCredentials : Boolean = false,
-    val pixelaDialogErrorMessage: String? = null
+    val pixelaDialogErrorMessage: String? = null,
+    val pixelaEnabled: Boolean = true
 )
 
 sealed class SettingsScreenEvent{
@@ -28,7 +32,8 @@ sealed class SettingsScreenEvent{
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
-    private val pixelaCredentialRepo: PixelaCredentialRepository
+    private val pixelaCredentialRepo: PixelaCredentialRepository,
+    private val userPreferencesRepo: UserPreferencesRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsScreenUiState())
     val uiState = _uiState.asStateFlow()
@@ -47,6 +52,15 @@ class SettingsScreenViewModel @Inject constructor(
                 }
             }
         }
+        userPreferencesRepo.preferenceFlow
+            .onEach { preference ->
+                _uiState.update { current ->
+                    current.copy(
+                        pixelaEnabled = preference.enablePixela,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onPixelaUserIdChanged(userId: String) = viewModelScope.launch {
@@ -92,6 +106,10 @@ class SettingsScreenViewModel @Inject constructor(
                 showPixelaCredentialDialog = !current.showPixelaCredentialDialog
             )
         }
+    }
+
+    fun togglePixelaFeature(enable: Boolean) = viewModelScope.launch {
+        userPreferencesRepo.updateEnablePixela(enable)
     }
 
     private fun toggleCheckingCredentialState() = viewModelScope.launch {
