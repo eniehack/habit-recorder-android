@@ -199,16 +199,18 @@ class RecordScreenViewModel @Inject constructor(
         }
     }
 
-    fun removeSelectedItemsFromDatabase(): Any = viewModelScope.launch {
+    fun removeSelectedItemsFromDatabase() = viewModelScope.launch {
         _uiState.value.selectedItems.map { habit ->
             offlineHabitsRepo.deleteHabit(habit)
         }
         Log.d("HabitRecorderApp", "removed selectedItems ${_uiState.value.selectedItems}")
+        _eventFlow.emit(RecordScreenEvent.DeletedToast(_uiState.value.selectedItems.size))
         _uiState.update { current ->
             current.copy(
                 selectedItems = setOf()
             )
         }
+        disableSelectedMode()
     }
 
     fun createCheckInOnPixela(pixelaId: String) = viewModelScope.launch {

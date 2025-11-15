@@ -174,7 +174,6 @@ fun HabitRecorderApp(
                             actions = {
                                 IconButton(onClick = {
                                     viewModel.removeSelectedItemsFromDatabase()
-                                    viewModel.disableSelectedMode()
                                 }) {
                                     Icon(
                                         imageVector = Icons.Filled.Delete,
