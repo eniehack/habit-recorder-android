@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -106,7 +107,11 @@ fun HabitCard(
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
-                    text = "${habitWithStreak.streaks} streaks",
+                    text = pluralStringResource(
+                        R.plurals.streaks,
+                        habitWithStreak.streaks,
+                        habitWithStreak.streaks
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

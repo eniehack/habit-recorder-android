@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HabitRecorder</string>
+    <string name="pixelaWebsiteAnchorText">Pixela公式ウェブサイト</string>
+    <plurals name="streaks">
+        <item quantity="other">%1$d日連続達成中</item>
+    </plurals>
+    <plurals name="deleted_habits">
+        <item quantity="other">%1$d個の習慣を削除</item>
+    </plurals>
+    <string name="record_tab_name">記録</string>
+    <string name="history_tab_name">履歴</string>
+    <string name="settings_tab_name">設定</string>
+    <string name="enable_pixela_button_label">Pixela連携を有効にする</string>
+    <string name="pixela_account_settings_label">アカウント設定</string>
+    <string name="pixela_userid_input_label">ユーザーID</string>
+    <string name="pixela_token_input_label">トークン</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+</resources>

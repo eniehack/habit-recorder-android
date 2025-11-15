@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -93,19 +94,19 @@ fun BottomNavigationBar(
 ) {
     val items = listOf(
         NavigationItem(
-            "record",
+            stringResource(R.string.record_tab_name),
             HabitRecorderScreen.HabitRecord,
             Icons.Filled.Edit,
             Icons.Outlined.Edit
         ),
         NavigationItem(
-            "history",
+            stringResource(R.string.history_tab_name),
             HabitRecorderScreen.History,
             ImageVector.vectorResource(R.drawable.history),
             ImageVector.vectorResource(R.drawable.history)
         ),
         NavigationItem(
-            "settings",
+            stringResource(R.string.settings_tab_name),
             HabitRecorderScreen.Setting,
             Icons.Filled.Settings,
             Icons.Outlined.Settings
@@ -172,14 +173,8 @@ fun HabitRecorderApp(
                             },
                             actions = {
                                 IconButton(onClick = {
-                                    val deletedItemLength = uiState.selectedItems.size
                                     viewModel.removeSelectedItemsFromDatabase()
                                     viewModel.disableSelectedMode()
-                                    Toast.makeText(
-                                        context,
-                                        "deleted $deletedItemLength items",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
                                 }) {
                                     Icon(
                                         imageVector = Icons.Filled.Delete,
@@ -202,6 +197,15 @@ fun HabitRecorderApp(
                         when (event) {
                             is RecordScreenEvent.Toast ->
                                 Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                            is RecordScreenEvent.DeletedToast -> {
+                                val toastMessage =
+                                    context.resources.getQuantityString(
+                                        R.plurals.deleted_habits,
+                                        event.quantity,
+                                        event.quantity,
+                                    )
+                                Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }

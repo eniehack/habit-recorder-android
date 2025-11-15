@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">HabitRecorder</string>
+    <plurals name="streaks">
+        <item quantity="one">%1$d streak</item>
+        <item quantity="other">%1$d streaks</item>
+    </plurals>
+    <plurals name="deleted_habits">
+        <item quantity="one">deleted %1$d item</item>
+        <item quantity="other">deleted %1$d items</item>
+    </plurals>
+    <string name="pixelaWebsiteAnchorText">pixela offical web site</string>
+    <string name="record_tab_name">record</string>
+    <string name="history_tab_name">history</string>
+    <string name="settings_tab_name">settings</string>
+    <string name="enable_pixela_button_label">enable pixela integration</string>
+    <string name="pixela_account_settings_label">account settings</string>
+    <string name="pixela_userid_input_label">user id</string>
+    <string name="pixela_token_input_label">user token</string>
+    <string name="save">save</string>
+    <string name="cancel">cancel</string>
 </resources>

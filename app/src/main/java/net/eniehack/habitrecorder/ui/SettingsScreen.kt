@@ -21,11 +21,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.eniehack.habitrecorder.R
 
 @Composable
 fun SettingScreen(
@@ -52,21 +54,21 @@ fun SettingScreen(
             Text(text = "Pixela設定", style = MaterialTheme.typography.titleSmall)
         })
         ListItem(
-            headlineContent = { Text("Pixela連携を有効にする")},
+            headlineContent = { Text(stringResource(R.string.enable_pixela_button_label)) },
             trailingContent = {
                 Switch(checked = enablePixelaFeature, onCheckedChange = onPixelaFeatureToggled)
             }
         )
         ListItem(
             headlineContent = {
-                Text(text = "アカウント設定")
+                Text(text = stringResource(R.string.pixela_account_settings_label))
             },
             modifier = Modifier.fillMaxWidth().clickable(enabled = enablePixelaFeature){ onDialogEnabled() }
         )
         ListItem(
             headlineContent = {
                 Text(
-                    text = "Pixela公式ウェブサイト",
+                    text = stringResource(R.string.pixelaWebsiteAnchorText),
                 )
             },
             modifier = Modifier.fillMaxWidth().clickable(enabled = enablePixelaFeature){ uriHandler.openUri(url) }
@@ -99,12 +101,13 @@ fun SettingScreen(
                         onValueChange = onUserIdChanged,
                         label = { Text("ユーザーID") },
                         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                        label = { Text(stringResource(R.string.pixela_userid_input_label)) },
                     )
 
                     OutlinedTextField(
                         value = token,
                         onValueChange = onTokenChanged,
-                        label = { Text("パスワード") },
+                        label = { Text(stringResource(R.string.pixela_token_input_label)) },
                         visualTransformation = PasswordVisualTransformation(), // 入力を非表示
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
@@ -118,10 +121,10 @@ fun SettingScreen(
                 }
             },
             confirmButton = {
-                Button(onClick = { onConformButtonClicked() } ) { Text("保存") }
+                Button(onClick = { onConformButtonClicked() }) { Text(stringResource(R.string.save)) }
             },
             dismissButton = {
-                TextButton(onClick = { onDismissButtonClicked() }) { Text("キャンセル") }
+                TextButton(onClick = { onDismissButtonClicked() }) { Text(stringResource(R.string.cancel)) }
             }
         )
     }

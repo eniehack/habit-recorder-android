@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -86,7 +87,11 @@ fun HabitHistoryCard(modifier: Modifier = Modifier, habitWith1WeekHistory: Habit
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = "${habitWith1WeekHistory.streaks} streaks",
+                text = pluralStringResource(
+                    R.plurals.streaks,
+                    habitWith1WeekHistory.streaks,
+                    habitWith1WeekHistory.streaks
+                ),
                 style = MaterialTheme.typography.bodySmall,
             )
         }

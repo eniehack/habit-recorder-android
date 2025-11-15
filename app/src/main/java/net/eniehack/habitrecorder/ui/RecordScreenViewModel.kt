@@ -13,11 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.data.CheckIn
 import net.eniehack.habitrecorder.data.Habit
@@ -62,6 +62,7 @@ fun calcStreaks(checkIns: List<CheckIn>, baseDate: LocalDate, dateFormat: DateTi
 
 sealed class RecordScreenEvent {
     data class Toast(val message: String): RecordScreenEvent()
+    data class DeletedToast(val quantity: Int) : RecordScreenEvent()
 }
 
 @HiltViewModel
