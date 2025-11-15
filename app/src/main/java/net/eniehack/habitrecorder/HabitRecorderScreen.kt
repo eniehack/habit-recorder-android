@@ -39,6 +39,8 @@ import kotlinx.serialization.Serializable
 import net.eniehack.habitrecorder.ui.EditHabitScreen
 import net.eniehack.habitrecorder.ui.EditHabitScreenEvent
 import net.eniehack.habitrecorder.ui.EditHabitScreenViewModel
+import net.eniehack.habitrecorder.ui.HistoryScreen
+import net.eniehack.habitrecorder.ui.HistoryScreenViewModel
 import net.eniehack.habitrecorder.ui.RecordScreen
 import net.eniehack.habitrecorder.ui.RecordScreenEvent
 import net.eniehack.habitrecorder.ui.RecordScreenViewModel
@@ -265,6 +267,22 @@ fun HabitRecorderApp(
                         viewModel.onPixelaIdChanged(it)
                     },
                     modifier = modifier,
+                )
+            }
+        }
+        composable(route = HabitRecorderScreen.History.name) {
+            val viewModel = hiltViewModel<HistoryScreenViewModel>()
+            val uiState by viewModel.uiState.collectAsState()
+            HabitRecorderScaffold(
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController
+                    )
+                }
+            ) { modifier ->
+                HistoryScreen(
+                    modifier = modifier,
+                    habits = uiState.habits,
                 )
             }
         }
