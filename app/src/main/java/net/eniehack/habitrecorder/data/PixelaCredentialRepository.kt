@@ -3,7 +3,6 @@ package net.eniehack.habitrecorder.data
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import net.eniehack.habitrecorder.snippets.proto.PixelaUserCredentials
-import net.eniehack.habitrecorder.snippets.proto.copy
 import javax.inject.Inject
 
 class PixelaCredentialRepository @Inject constructor(

@@ -164,7 +164,7 @@ class RecordScreenViewModel @Inject constructor(
         }
     }
 
-    fun enableSelectedMode() = viewModelScope.launch {
+    fun enableSelectedMode() {
         _uiState.update { current ->
             current.copy(
                 isSelectionMode = true
@@ -172,7 +172,7 @@ class RecordScreenViewModel @Inject constructor(
         }
     }
 
-    fun disableSelectedMode() = viewModelScope.launch {
+    fun disableSelectedMode() {
         _uiState.update { current ->
             current.copy(
                 isSelectionMode = false,
@@ -181,7 +181,7 @@ class RecordScreenViewModel @Inject constructor(
         }
     }
 
-    fun addSelectedItem(habit: Habit) = viewModelScope.launch {
+    fun addSelectedItem(habit: Habit) {
         _uiState.update { current ->
             current.copy(
                 selectedItems = current.selectedItems.toMutableSet().apply { add(habit) }
@@ -190,7 +190,7 @@ class RecordScreenViewModel @Inject constructor(
         Log.d("HabitRecorderApp", "updated selectedItems ${_uiState.value.selectedItems}")
     }
 
-    fun removeSelectedItem(habit: Habit) = viewModelScope.launch {
+    fun removeSelectedItem(habit: Habit) {
         _uiState.update { current ->
             current.copy(
                 selectedItems = current.selectedItems.toMutableSet().apply { remove(habit) }
