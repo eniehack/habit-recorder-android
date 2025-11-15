@@ -9,14 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +66,7 @@ private fun ProvideLayoutDirection(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitHistoryCard(modifier: Modifier = Modifier, habitWith1WeekHistory: HabitWithHistory) {
     Column(
@@ -94,24 +98,30 @@ fun HabitHistoryCard(modifier: Modifier = Modifier, habitWith1WeekHistory: Habit
                 modifier = Modifier.padding(8.dp)
             ) {
                 habitWith1WeekHistory.history.forEach {
-                    var description = ""
-                    var color: Color
-                    if (it.second) {
-                        description = "${it.first} - done"
-                        color = MaterialTheme.colorScheme.primary
-                    } else {
-                        description = "${it.first} - undone"
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                    }
-                    Canvas(
-                        contentDescription = description,
-                        modifier = Modifier.size(24.dp),
-                    ) {
-                        drawRoundRect(
-                            color = color,
-                            size = this.size,
-                            cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                    val description =
+                        if (it.second) "${it.first} - done" else "${it.first} - undone"
+                    val color =
+                        if (it.second) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.3f
                         )
+                    val tooltipState = rememberTooltipState()
+                    TooltipBox(
+                        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                        tooltip = {
+                            Text(description)
+                        },
+                        state = tooltipState
+                    ) {
+                        Canvas(
+                            contentDescription = description,
+                            modifier = Modifier.size(24.dp),
+                        ) {
+                            drawRoundRect(
+                                color = color,
+                                size = this.size,
+                                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                            )
+                        }
                     }
                 }
             }
