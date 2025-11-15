@@ -45,7 +45,9 @@ fun SettingScreen(
     onDismissButtonClicked: () -> Unit = {},
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(16.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         val uriHandler = LocalUriHandler.current
         val url = "https://pixe.la/"
@@ -63,7 +65,9 @@ fun SettingScreen(
             headlineContent = {
                 Text(text = stringResource(R.string.pixela_account_settings_label))
             },
-            modifier = Modifier.fillMaxWidth().clickable(enabled = enablePixelaFeature){ onDialogEnabled() }
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enablePixelaFeature) { onDialogEnabled() }
         )
         ListItem(
             headlineContent = {
@@ -71,7 +75,9 @@ fun SettingScreen(
                     text = stringResource(R.string.pixelaWebsiteAnchorText),
                 )
             },
-            modifier = Modifier.fillMaxWidth().clickable(enabled = enablePixelaFeature){ uriHandler.openUri(url) }
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enablePixelaFeature) { uriHandler.openUri(url) }
         )
         ListItem(
             leadingContent = {
@@ -99,9 +105,10 @@ fun SettingScreen(
                     OutlinedTextField(
                         value = userId,
                         onValueChange = onUserIdChanged,
-                        label = { Text("ユーザーID") },
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
                         label = { Text(stringResource(R.string.pixela_userid_input_label)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     )
 
                     OutlinedTextField(
