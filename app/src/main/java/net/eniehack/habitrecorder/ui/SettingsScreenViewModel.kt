@@ -41,9 +41,8 @@ class SettingsScreenViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        viewModelScope.launch {
-            val credentialFlow = pixelaCredentialRepo.read()
-            credentialFlow.collect { cred ->
+        pixelaCredentialRepo.credentialFlow
+            .onEach { cred ->
                 _uiState.update { current ->
                     current.copy(
                         pixelaUserId = cred.userId,
@@ -51,7 +50,7 @@ class SettingsScreenViewModel @Inject constructor(
                     )
                 }
             }
-        }
+            .launchIn(viewModelScope)
         userPreferencesRepo.preferenceFlow
             .onEach { preference ->
                 _uiState.update { current ->

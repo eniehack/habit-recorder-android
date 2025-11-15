@@ -8,17 +8,21 @@ import javax.inject.Inject
 class PixelaCredentialRepository @Inject constructor(
     private val dataStore: DataStore<PixelaUserCredentials>
 ) {
-    suspend fun save(userId: String, token: String) {
+    val credentialFlow: Flow<PixelaUserCredentials> = dataStore.data
+
+    suspend fun updateUserId(userId: String) {
         dataStore.updateData { currentStore ->
             currentStore.toBuilder()
-                .clear()
                 .setUserId(userId)
-                .setToken(token)
                 .build()
         }
     }
 
-    fun read(): Flow<PixelaUserCredentials> {
-        return dataStore.data
+    suspend fun updateToken(token: String) {
+        dataStore.updateData { currentStore ->
+            currentStore.toBuilder()
+                .setToken(token)
+                .build()
+        }
     }
 }
