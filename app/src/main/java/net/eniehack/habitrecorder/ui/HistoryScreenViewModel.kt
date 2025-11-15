@@ -40,25 +40,26 @@ class HistoryScreenViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllHabits() {
-        offlineHabitsRepo.getHabitsWithCheckInsStream().flatMapLatest { habitsWithCheckins ->
-            Log.d("HabitBuilder", habitsWithCheckins.toString())
-            if (habitsWithCheckins.isEmpty()) {
-                val today = LocalDate.now()
-                val history = (0..6).map {
-                    today.minusDays(it.toLong())
-                }.map { date ->
-                    Pair(date.format(dateFormat), false)
-                }
-                offlineHabitsRepo.getAllHabitStream().map { habits ->
-                    habits.map { habit ->
-                        HabitWithHistory(
-                            habit,
-                            streaks = 0,
-                            history = history,
-                        )
+        val today = LocalDate.now()
+        val dateList = (0..6).map {
+            today.minusDays(it.toLong())
+        }
+        offlineHabitsRepo.getHabitsWithCheckInsStream()
+            .flatMapLatest { habitsWithCheckins ->
+                Log.d("HabitBuilder", habitsWithCheckins.toString())
+                if (habitsWithCheckins.isEmpty()) {
+                    return@flatMapLatest offlineHabitsRepo.getAllHabitStream().map { habits ->
+                        habits.map { habit ->
+                            HabitWithHistory(
+                                habit,
+                                streaks = 0,
+                                history = dateList.map { date ->
+                                    Pair(date.format(dateFormat), false)
+                                },
+                            )
+                        }
                     }
                 }
-            } else {
                 flowOf(habitsWithCheckins.map { habitWithCheckIn ->
                     Log.d(
                         "HabitBuilder",
@@ -70,29 +71,14 @@ class HistoryScreenViewModel @Inject constructor(
                             )
                         }"
                     )
-                    val checkIns = habitWithCheckIn.checkIns
-                        .sortedBy { it.createdAt }
-                    val checkInsInLastWeek =
-                        if (7 <= checkIns.size) checkIns.subList(0, 6) else checkIns
-                    val checkInDates = checkInsInLastWeek.map {
-                        LocalDate.parse(it.createdAt, dateFormat)
-                    }
-                    val today = LocalDate.now()
-                    val dateList = (0..6).map {
-                        today.minusDays(it.toLong())
-                    }
-                    val checkInIndex = 0
-                    val history = dateList.map { date ->
-                        val checkIn =
-                            if (checkInDates.lastIndex <= checkInIndex) checkInDates[checkInIndex] else null
-                        var h: Pair<String, Boolean>
-                        if (checkIn != null && checkIn == date) {
-                            h = Pair(date.format(dateFormat), true)
-                            checkInIndex.inc()
-                        } else {
-                            h = Pair(date.format(dateFormat), false)
+                    val checkInDatesSet = habitWithCheckIn.checkIns
+                        .mapNotNull {
+                            LocalDate.parse(it.createdAt, dateFormat)
                         }
-                        h
+                        .toSet()
+                    val history = dateList.map { date ->
+                        val isDone = checkInDatesSet.contains(date)
+                        Pair(date.format(dateFormat), isDone)
                     }
                     HabitWithHistory(
                         habit = habitWithCheckIn.habit,
@@ -104,12 +90,11 @@ class HistoryScreenViewModel @Inject constructor(
                         history = history,
                     )
                 })
-            }
-        }.onEach { habitWithHistories ->
-            Log.d("HabitRecorder", "recv new data. len: ${habitWithHistories.size}")
-            _uiState.update { current ->
-                current.copy(habits = habitWithHistories)
-            }
-        }.launchIn(viewModelScope)
+            }.onEach { habitWithHistories ->
+                Log.d("HabitRecorder", "recv new data. len: ${habitWithHistories.size}")
+                _uiState.update { current ->
+                    current.copy(habits = habitWithHistories)
+                }
+            }.launchIn(viewModelScope)
     }
 }
