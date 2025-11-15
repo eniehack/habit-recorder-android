@@ -62,7 +62,7 @@ class SettingsScreenViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onPixelaUserIdChanged(userId: String) = viewModelScope.launch {
+    fun onPixelaUserIdChanged(userId: String) {
         _uiState.update { current ->
             current.copy(
                 pixelaUserId = userId
@@ -70,7 +70,7 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
-    fun onPixelaTokenChanged(token: String) = viewModelScope.launch {
+    fun onPixelaTokenChanged(token: String) {
         _uiState.update { current ->
             current.copy(
                 pixelaToken = token
@@ -93,13 +93,14 @@ class SettingsScreenViewModel @Inject constructor(
             toggleCheckingCredentialState()
             return@launch
         }
-        pixelaCredentialRepo.save(uiState.value.pixelaUserId, uiState.value.pixelaToken)
+        pixelaCredentialRepo.updateUserId(uiState.value.pixelaUserId)
+        pixelaCredentialRepo.updateToken(uiState.value.pixelaToken)
         togglePixelaCredentialDialog()
         setPixelaDialogErrorMessage(null)
         _eventFlow.emit(SettingsScreenEvent.Toast("credential saved"))
     }
 
-    fun togglePixelaCredentialDialog() = viewModelScope.launch {
+    fun togglePixelaCredentialDialog() {
         _uiState.update { current ->
             current.copy(
                 showPixelaCredentialDialog = !current.showPixelaCredentialDialog
@@ -111,7 +112,7 @@ class SettingsScreenViewModel @Inject constructor(
         userPreferencesRepo.updateEnablePixela(enable)
     }
 
-    private fun toggleCheckingCredentialState() = viewModelScope.launch {
+    private fun toggleCheckingCredentialState() {
         _uiState.update { current ->
             current.copy(
                 checkingPixelaCredentials = !current.checkingPixelaCredentials
@@ -119,7 +120,7 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
-    private fun setPixelaDialogErrorMessage(message: String?) = viewModelScope.launch {
+    private fun setPixelaDialogErrorMessage(message: String?) {
         _uiState.update { current ->
             current.copy(
                 pixelaDialogErrorMessage = message
