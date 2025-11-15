@@ -211,7 +211,7 @@ class RecordScreenViewModel @Inject constructor(
     }
 
     fun createCheckInOnPixela(pixelaId: String) = viewModelScope.launch {
-        val credential = pixelaCredentialRepo.read().firstOrNull()
+        val credential = pixelaCredentialRepo.credentialFlow.firstOrNull()
         if (credential == null) {
             _eventFlow.emit(RecordScreenEvent.Toast("credential not set"))
             return@launch
