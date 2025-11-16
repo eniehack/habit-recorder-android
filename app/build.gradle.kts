@@ -6,11 +6,12 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.aboutlibraries)
 }
 
 android {
     namespace = "net.eniehack.habitrecorder"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "net.eniehack.habitrecorder"
@@ -88,6 +89,8 @@ dependencies {
     implementation(libs.tink)
     implementation(libs.androidx.datastore)
     implementation(libs.protobuf.kotlin.lite)
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries.compose.m3)
 
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

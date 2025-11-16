@@ -36,6 +36,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import kotlinx.serialization.Serializable
 import net.eniehack.habitrecorder.ui.EditHabitScreen
 import net.eniehack.habitrecorder.ui.EditHabitScreenEvent
@@ -53,6 +55,7 @@ enum class HabitRecorderScreen {
     HabitRecord,
     History,
     Setting,
+    License,
 }
 
 @Serializable
@@ -321,8 +324,15 @@ fun HabitRecorderApp(
                     onDialogEnabled = { viewModel.togglePixelaCredentialDialog() },
                     onConformButtonClicked = { viewModel.savePixelaCredential() },
                     onDismissButtonClicked = { viewModel.togglePixelaCredentialDialog() },
-                    onPixelaFeatureToggled = { viewModel.togglePixelaFeature(it) }
+                    onPixelaFeatureToggled = { viewModel.togglePixelaFeature(it) },
+                    onLicenseItemClicked = { navController.navigate(HabitRecorderScreen.License.name) }
                 )
+            }
+        }
+        composable(route = HabitRecorderScreen.License.name) {
+            val libraries by produceLibraries(R.raw.aboutlibraries)
+            HabitRecorderScaffold() { modifier ->
+                LibrariesContainer(libraries, modifier)
             }
         }
     }

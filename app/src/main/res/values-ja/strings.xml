@@ -17,4 +17,6 @@
     <string name="pixela_token_input_label">トークン</string>
     <string name="save">保存</string>
     <string name="cancel">キャンセル</string>
+    <string name="github_repo_label">GitHubリポジトリ</string>
+    <string name="open_source_license_label">オープンソースライセンス</string>
 </resources>

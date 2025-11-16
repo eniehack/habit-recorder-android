@@ -21,6 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +44,7 @@ fun SettingScreen(
     onDialogEnabled: () -> Unit = {},
     onConformButtonClicked: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {},
+    onLicenseItemClicked: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -50,7 +52,8 @@ fun SettingScreen(
             .padding(16.dp)
     ) {
         val uriHandler = LocalUriHandler.current
-        val url = "https://pixe.la/"
+        val pixelaUrl = "https://pixe.la/"
+        val githubRepoUrl = "https://github.com/eniehack/habit-recorder-android"
 
         ListItem(headlineContent = {
             Text(text = "Pixela設定", style = MaterialTheme.typography.titleSmall)
@@ -77,7 +80,7 @@ fun SettingScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(enabled = enablePixelaFeature) { uriHandler.openUri(url) }
+                .clickable(enabled = enablePixelaFeature) { uriHandler.openUri(pixelaUrl) }
         )
         ListItem(
             leadingContent = {
@@ -95,6 +98,36 @@ fun SettingScreen(
             }
         )
         HorizontalDivider(Modifier.padding(vertical = 8.dp), DividerDefaults.Thickness, DividerDefaults.color)
+
+        ListItem(headlineContent = {
+            Text(text = "このアプリについて", style = MaterialTheme.typography.titleSmall)
+        })
+        ListItem(
+            leadingContent = {
+                Icon(
+                    painterResource(R.drawable.github),
+                    contentDescription = "GitHub logo",
+                )
+            },
+            headlineContent = {
+                Text(
+                    text = stringResource(R.string.github_repo_label),
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable() { uriHandler.openUri(githubRepoUrl) }
+        )
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = stringResource(R.string.open_source_license_label),
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onLicenseItemClicked() }
+        )
     }
     if (enablePixelaFeature && showDialog) {
         AlertDialog(
