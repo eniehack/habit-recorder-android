@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import net.eniehack.habitrecorder.data.DateFormatter.pixelaFormat
 import net.eniehack.habitrecorder.data.Habit
 import net.eniehack.habitrecorder.data.OfflineHabitsRepository
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -31,7 +31,6 @@ class HistoryScreenViewModel @Inject constructor(
     private val offlineHabitsRepo: OfflineHabitsRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryScreenUiState())
-    private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -54,7 +53,7 @@ class HistoryScreenViewModel @Inject constructor(
                                 habit,
                                 streaks = 0,
                                 history = dateList.map { date ->
-                                    Pair(date.format(dateFormat), false)
+                                    Pair(date.format(pixelaFormat), false)
                                 },
                             )
                         }
@@ -67,25 +66,25 @@ class HistoryScreenViewModel @Inject constructor(
                             calcStreaks(
                                 habitWithCheckIn.checkIns,
                                 LocalDate.now(),
-                                dateFormat
+                                pixelaFormat
                             )
                         }"
                     )
                     val checkInDatesSet = habitWithCheckIn.checkIns
                         .mapNotNull {
-                            LocalDate.parse(it.date, dateFormat)
+                            LocalDate.parse(it.date, pixelaFormat)
                         }
                         .toSet()
                     val history = dateList.map { date ->
                         val isDone = checkInDatesSet.contains(date)
-                        Pair(date.format(dateFormat), isDone)
+                        Pair(date.format(pixelaFormat), isDone)
                     }
                     HabitWithHistory(
                         habit = habitWithCheckIn.habit,
                         streaks = calcStreaks(
                             habitWithCheckIn.checkIns,
                             LocalDate.now(),
-                            dateFormat
+                            pixelaFormat
                         ),
                         history = history,
                     )
