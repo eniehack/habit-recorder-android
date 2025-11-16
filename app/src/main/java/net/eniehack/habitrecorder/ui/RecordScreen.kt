@@ -138,8 +138,10 @@ fun RecordHabitsScreenPreview() {
                 habit = Habit(
                     id = 1,
                     title = "腹筋",
-                    type = HabitType.ACHIEVEMENT,
-                    unit = "回"
+                    type = HabitType.BINARY,
+                    unit = "回",
+                    lastSyncedAt = null,
+                    updatedAt = null
                 ),
                 streaks = 10,
                 hasTodayCheckIn = true,
@@ -148,8 +150,10 @@ fun RecordHabitsScreenPreview() {
                 habit = Habit(
                     id = 2,
                     title = "読書",
-                    type = HabitType.ACHIEVEMENT,
-                    unit = "p"
+                    type = HabitType.BINARY,
+                    unit = "p",
+                    lastSyncedAt = null,
+                    updatedAt = null
                 ),
                 streaks = 10
             )

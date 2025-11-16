@@ -27,8 +27,11 @@ import net.eniehack.habitrecorder.data.PixelaApi
 import net.eniehack.habitrecorder.data.PixelaCredentialRepository
 import net.eniehack.habitrecorder.data.UserPreferencesRepository
 import net.eniehack.habitrecorder.snippets.proto.UserPreferences
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 import javax.inject.Inject
 
 data class HabitWithStreak(
@@ -49,7 +52,7 @@ fun calcStreaks(checkIns: List<CheckIn>, baseDate: LocalDate, dateFormat: DateTi
     var currentStreak = 0
     var previousDate = baseDate
     for (checkIn in checkIns.sortedBy { checkIn -> checkIn.createdAt }.reversed()) {
-        val currentDate = LocalDate.parse(checkIn.createdAt, dateFormat)
+        val currentDate = LocalDate.parse(checkIn.date, dateFormat)
 
         if (currentDate != previousDate) {
             break
@@ -90,7 +93,7 @@ class RecordScreenViewModel @Inject constructor(
         if (checkIns.isEmpty()) return false
         val today = LocalDate.now()
         val formatedToday = today.format(dateFormat)
-        return checkIns.fold(false) { _, checkIn -> checkIn.createdAt == formatedToday }
+        return checkIns.fold(false) { _, checkIn -> checkIn.date == formatedToday }
     }
 
 
@@ -138,10 +141,14 @@ class RecordScreenViewModel @Inject constructor(
                     LocalDate.now().format(dateFormat)
                 })"
             )
+            val now = Instant.now()
+            val timeZoneId = ZoneId.of(TimeZone.getDefault().id)
             offlineCheckInRepo.insertCheckIn(
                 CheckIn(
                     habitId = habitWithStreak.habit.id,
-                    createdAt = LocalDate.now().format(dateFormat)
+                    date = dateFormat.withZone(timeZoneId).format(now),
+                    updatedAt = now,
+                    createdAt = now
                 )
             )
             if (habitWithStreak.habit.pixelaId != null && userPrefs.value.enablePixela) {

@@ -24,7 +24,7 @@ interface CheckInDao {
     @Query("SELECT * FROM checkin WHERE habit_id = :habitId ORDER BY date(created_at) DESC")
     fun getCheckInsByHabit(habitId: Int): Flow<List<CheckIn>>
 
-    @Query("SELECT * FROM checkin WHERE habit_id = :habitId AND created_at = date(:date)")
+    @Query("SELECT * FROM checkin WHERE habit_id = :habitId AND date = :date")
     fun getCheckInByHabitWithDate(habitId: Int, date: String): Flow<CheckIn?>
 
     @Query("SELECT * FROM checkin WHERE id = :id")

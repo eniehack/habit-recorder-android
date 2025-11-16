@@ -60,8 +60,11 @@ fun EditHabitScreenPreview() {
     EditHabitScreen(
         Habit(
             title = "読書",
-            type = HabitType.ACHIEVEMENT,
-            unit = "ページ"
+            type = HabitType.BINARY,
+            unit = "ページ",
+            pixelaId = null,
+            lastSyncedAt = null,
+            updatedAt = null,
         )
     )
 }

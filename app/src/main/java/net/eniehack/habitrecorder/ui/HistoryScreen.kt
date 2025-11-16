@@ -146,8 +146,10 @@ fun HabitHistoryCardPreview() {
                 habit = Habit(
                     id = 1,
                     title = "腹筋",
-                    type = HabitType.ACHIEVEMENT,
-                    unit = "回"
+                    type = HabitType.BINARY,
+                    unit = "回",
+                    lastSyncedAt = null,
+                    updatedAt = null
                 ),
                 streaks = 10,
                 history = listOf(

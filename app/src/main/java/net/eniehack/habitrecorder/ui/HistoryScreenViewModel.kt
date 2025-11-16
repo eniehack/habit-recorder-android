@@ -73,7 +73,7 @@ class HistoryScreenViewModel @Inject constructor(
                     )
                     val checkInDatesSet = habitWithCheckIn.checkIns
                         .mapNotNull {
-                            LocalDate.parse(it.createdAt, dateFormat)
+                            LocalDate.parse(it.date, dateFormat)
                         }
                         .toSet()
                     val history = dateList.map { date ->

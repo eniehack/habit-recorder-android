@@ -22,8 +22,10 @@ data class EditHabitScreenUiState(
     val habit: Habit = Habit(
         title = "",
         unit = "",
-        type = HabitType.ACHIEVEMENT,
-        pixelaId = null
+        type = HabitType.BINARY,
+        pixelaId = null,
+        lastSyncedAt = null,
+        updatedAt = null,
     )
 )
 
