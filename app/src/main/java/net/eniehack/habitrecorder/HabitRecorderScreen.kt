@@ -260,6 +260,12 @@ fun HabitRecorderApp(
             HabitRecorderScaffold { modifier ->
                 EditHabitScreen(
                     habit = uiState.habit,
+                    enabledPixelaIntegration = uiState.enablePixelaFeature,
+                    submitButtonLabel = if (uiState.habit.title == "") {
+                        R.string.add_habit_submit_button_label
+                    } else {
+                        R.string.save
+                    },
                     onTitleChanged = { viewModel.onTitleChanged(it) },
                     onUnitChanged = { viewModel.onUnitChanged(it) },
                     onButtonClick = {

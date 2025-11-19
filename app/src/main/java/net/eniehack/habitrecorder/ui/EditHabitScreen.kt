@@ -17,6 +17,7 @@ import net.eniehack.habitrecorder.data.HabitType
 @Composable
 fun EditHabitScreen(
     habit: Habit,
+    enabledPixelaIntegration: Boolean = true,
     onButtonClick: () -> Unit = {},
     onPixelaIdChanged: (String?) -> Unit = {},
     onTitleChanged: (String) -> Unit = {},
@@ -41,6 +42,7 @@ fun EditHabitScreen(
         )
         TextField(
             value = habit.pixelaId ?: "",
+            enabled = enabledPixelaIntegration,
             onValueChange = { onPixelaIdChanged(it) },
             label = { Text("pixela id") }
         )

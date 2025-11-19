@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.eniehack.habitrecorder.EditHabitNavigationArgument
 import net.eniehack.habitrecorder.data.Habit
 import net.eniehack.habitrecorder.data.HabitDao
 import net.eniehack.habitrecorder.data.HabitType
+import net.eniehack.habitrecorder.data.UserPreferencesRepository
 import javax.inject.Inject
 
 data class EditHabitScreenUiState(
@@ -26,7 +29,8 @@ data class EditHabitScreenUiState(
         pixelaId = null,
         lastSyncedAt = null,
         updatedAt = null,
-    )
+    ),
+    val enablePixelaFeature: Boolean = true,
 )
 
 sealed class EditHabitScreenEvent {
@@ -34,7 +38,11 @@ sealed class EditHabitScreenEvent {
 }
 
 @HiltViewModel
-class EditHabitScreenViewModel @Inject constructor(savedStateHandle: SavedStateHandle, private val habitDao: HabitDao) : ViewModel() {
+class EditHabitScreenViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val habitDao: HabitDao,
+    private val userPreferencesRepo: UserPreferencesRepository
+) : ViewModel() {
     private val argument = savedStateHandle.toRoute<EditHabitNavigationArgument>()
     private val _uiState = MutableStateFlow(EditHabitScreenUiState())
     val uiState = _uiState.asStateFlow()
@@ -43,6 +51,15 @@ class EditHabitScreenViewModel @Inject constructor(savedStateHandle: SavedStateH
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
+        userPreferencesRepo.preferenceFlow
+            .onEach { preferences ->
+                _uiState.update { current ->
+                    current.copy(
+                        enablePixelaFeature = preferences.enablePixela,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
         if (argument.habitId != null) {
             val habitFlow = habitDao.getHabit(argument.habitId)
             viewModelScope.launch {
