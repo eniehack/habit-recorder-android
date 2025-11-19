@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -43,14 +44,11 @@ fun HistoryScreen(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = modifier.padding(top = 15.dp),
+        modifier = modifier.padding(12.dp),
     ) {
         items(items = habits, key = { it.habit.id }) { habit ->
             HabitHistoryCard(
                 habitWith1WeekHistory = habit,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
             )
         }
     }
@@ -73,6 +71,8 @@ fun HabitHistoryCard(modifier: Modifier = Modifier, habitWith1WeekHistory: Habit
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
         Text(
             text = habitWith1WeekHistory.habit.title,
@@ -113,9 +113,11 @@ fun HabitHistoryCard(modifier: Modifier = Modifier, habitWith1WeekHistory: Habit
                     TooltipBox(
                         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
                         tooltip = {
-                            Text(description)
+                            PlainTooltip {
+                                Text(description)
+                            }
                         },
-                        state = tooltipState
+                        state = tooltipState,
                     ) {
                         Canvas(
                             contentDescription = description,
@@ -138,9 +140,6 @@ fun HabitHistoryCard(modifier: Modifier = Modifier, habitWith1WeekHistory: Habit
 @Preview
 fun HabitHistoryCardPreview() {
     HabitHistoryCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
         habitWith1WeekHistory =
             HabitWithHistory(
                 habit = Habit(
@@ -160,5 +159,50 @@ fun HabitHistoryCardPreview() {
                     Pair("2025-01-05", false),
                 ),
             ),
+    )
+}
+
+@Composable
+@Preview
+fun HistoryScreenPreview() {
+    HistoryScreen(
+        habits = listOf(
+            HabitWithHistory(
+                habit = Habit(
+                    id = 1,
+                    title = "腹筋",
+                    type = HabitType.BINARY,
+                    unit = "回",
+                    lastSyncedAt = null,
+                    updatedAt = null
+                ),
+                streaks = 10,
+                history = listOf(
+                    Pair("2025-01-01", true),
+                    Pair("2025-01-02", false),
+                    Pair("2025-01-03", false),
+                    Pair("2025-01-04", true),
+                    Pair("2025-01-05", false),
+                ),
+            ),
+            HabitWithHistory(
+                habit = Habit(
+                    id = 2,
+                    title = "読書50p",
+                    type = HabitType.BINARY,
+                    unit = "回",
+                    lastSyncedAt = null,
+                    updatedAt = null
+                ),
+                streaks = 10,
+                history = listOf(
+                    Pair("2025-01-01", true),
+                    Pair("2025-01-02", false),
+                    Pair("2025-01-03", false),
+                    Pair("2025-01-04", true),
+                    Pair("2025-01-05", false),
+                ),
+            ),
+        )
     )
 }
